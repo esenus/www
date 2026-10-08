@@ -93,18 +93,18 @@
     /* =========================================================
        Island window
        
-       「100pxの巨大な円」のうち、
-       上から20pxだけを見せる窓。
+       円のサイズは画面幅に応じて変化。
+       円の上側20%だけを見せる窓。
        ========================================================= */
 
     .island-window {
       position: absolute;
 
       left: 50%;
-      top: calc(37.5vh - 20px);
+      top: calc(37.5vh - clamp(20px, 3.6vw, 36px));
 
-      width: 100px;
-      height: 20px;
+      width: clamp(100px, 18vw, 180px);
+      height: clamp(20px, 3.6vw, 36px);
 
       transform: translateX(-50%);
 
@@ -125,8 +125,8 @@
       left: 0;
       top: 0;
 
-      width: 100px;
-      height: 100px;
+      width: clamp(100px, 18vw, 180px);
+      height: clamp(100px, 18vw, 180px);
 
       border-radius: 50%;
 
@@ -248,7 +248,7 @@
       left: 50%;
       top: calc(37.5vh - 1px);
 
-      width: 128px;
+      width: clamp(124px, 23vw, 230px);
       height: 10px;
 
       transform: translateX(-50%);
@@ -909,8 +909,8 @@
       left: 50%;
       top: calc(37.5vh + 3px);
 
-      width: 108px;
-      height: 48px;
+      width: clamp(108px, 19.5vw, 195px);
+      height: clamp(48px, 8.7vw, 87px);
 
       transform: translateX(-50%);
 
@@ -1107,30 +1107,30 @@
       }
 
       /*
-       * 円は100pxのまま。
-       * 見える窓だけ20px。
+       * 円は画面幅に応じて変化。
+       * 見える窓は円の高さの20%。
        */
       .island-window {
-        top: calc(37.5vh - 20px);
+        top: calc(37.5vh - clamp(20px, 3.6vw, 36px));
 
-        width: 100px;
-        height: 20px;
+        width: clamp(100px, 18vw, 180px);
+        height: clamp(20px, 3.6vw, 36px);
       }
 
       .island {
-        width: 100px;
-        height: 100px;
+        width: clamp(100px, 18vw, 180px);
+        height: clamp(100px, 18vw, 180px);
       }
 
       .island-shadow {
         top: calc(37.5vh + 3px);
 
-        width: 108px;
-        height: 48px;
+        width: clamp(108px, 19.5vw, 195px);
+        height: clamp(48px, 8.7vw, 87px);
       }
 
       .island-gap-mist {
-        width: 124px;
+        width: clamp(124px, 23vw, 230px);
       }
 
       .brand {
@@ -1170,7 +1170,8 @@
 
     <!-- =======================================================
          巨大な円。
-         100pxのうち上側20pxだけを表示する。
+         円のサイズは画面幅に応じて変化し、
+         上側20%だけを表示する。
          ======================================================= -->
 
     <div class="island-window">
