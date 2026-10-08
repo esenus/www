@@ -1,1225 +1,2791 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>esenus</title>
+<title>esenus</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-    }
+/* =========================================================
+   Shared Variables
+========================================================= */
 
-    body {
-      background: #e7f0f4;
+:root {
 
-      font-family:
+    /*
+     * Island geometry
+     * -----------------------------------------------
+     * Both themes use exactly the same geometry.
+     */
+
+    --island-size: clamp(100px, 18vw, 180px);
+
+    --island-window-height:
+        calc(var(--island-size) * 0.20);
+
+    /*
+     * Visible island → horizon
+     *
+     * Actual physical gap:
+     * 4px
+     */
+    --island-horizon-gap: 4px;
+
+    /*
+     * Reflection begins almost immediately
+     * below the horizon.
+     */
+    --reflection-offset: 1px;
+
+}
+
+
+/* =========================================================
+   Reset
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Helvetica Neue",
-        "Hiragino Kaku Gothic ProN",
-        "Yu Gothic",
+        "Noto Sans JP",
         sans-serif;
-    }
+}
 
-    /* =========================================================
-       Scene
-       ========================================================= */
 
-    .scene {
-      position: relative;
+/* =========================================================
+   Theme Variables
+========================================================= */
 
-      width: 100%;
-      height: 100svh;
-      min-height: 520px;
+.scene {
 
-      overflow: hidden;
+    /*
+     * Dark is the default.
+     */
 
-      background:
+    --sky-top: #05070a;
+    --sky-mid: #0b1016;
+    --sky-bottom: #101820;
+
+    --sea-top: #101920;
+    --sea-mid: #0b1218;
+    --sea-bottom: #05090d;
+
+    --text-main:
+        rgba(220, 230, 235, 0.72);
+
+    --text-sub:
+        rgba(220, 230, 235, 0.27);
+
+    --button-bg:
+        rgba(255,255,255,0.045);
+
+    --button-border:
+        rgba(220,230,235,0.12);
+
+    --button-text:
+        rgba(220,230,235,0.55);
+
+    /*
+     * Dark island
+     */
+    --island-main:
+        rgba(105,119,126,0.30);
+
+    --island-mid:
+        rgba(76,88,95,0.27);
+
+    --island-low:
+        rgba(43,52,58,0.24);
+
+    --island-bottom:
+        rgba(18,24,28,0.16);
+
+    --island-atmosphere:
+        rgba(125,140,148,0.13);
+
+    /*
+     * Dark reflection
+     */
+    --reflection-main:
+        rgba(165,185,195,0.105);
+
+    --reflection-mid:
+        rgba(135,155,165,0.065);
+
+    --reflection-low:
+        rgba(100,120,130,0.035);
+
+    --reflection-line:
+        rgba(190,205,210,0.075);
+
+}
+
+
+/* =========================================================
+   Light Theme
+========================================================= */
+
+.scene.light {
+
+    --sky-top: #eaf2f5;
+    --sky-mid: #e5eef2;
+    --sky-bottom: #e0ebef;
+
+    --sea-top: #d8e7ec;
+    --sea-mid: #c8dce3;
+    --sea-bottom: #c1d6de;
+
+    --text-main:
+        rgba(55,79,87,0.62);
+
+    --text-sub:
+        rgba(66,87,94,0.48);
+
+    --button-bg:
+        rgba(255,255,255,0.28);
+
+    --button-border:
+        rgba(55,79,87,0.12);
+
+    --button-text:
+        rgba(55,79,87,0.58);
+
+    /*
+     * LIGHT ISLAND
+     *
+     * Considerably weaker than the previous light version.
+     *
+     * Blue-green rather than gray.
+     */
+    --island-main:
+        rgba(67,112,117,0.115);
+
+    --island-mid:
+        rgba(62,106,112,0.095);
+
+    --island-low:
+        rgba(57,101,107,0.070);
+
+    --island-bottom:
+        rgba(53,95,101,0.035);
+
+    --island-atmosphere:
+        rgba(70,119,123,0.045);
+
+    /*
+     * Very subtle reflection.
+     *
+     * It should be visible only enough to communicate:
+     * "the island is reflected in the water."
+     */
+    --reflection-main:
+        rgba(63,111,117,0.085);
+
+    --reflection-mid:
+        rgba(63,111,117,0.050);
+
+    --reflection-low:
+        rgba(63,111,117,0.020);
+
+    --reflection-line:
+        rgba(72,119,124,0.050);
+
+}
+
+
+/* =========================================================
+   Scene
+========================================================= */
+
+.scene {
+
+    position: relative;
+
+    width: 100%;
+    height: 100svh;
+    min-height: 520px;
+
+    overflow: hidden;
+
+    background:
         linear-gradient(
-          180deg,
-          #eaf2f5 0%,
-          #e5eef2 27%,
-          #e0ebef 48%,
-          #dce9ee 100%
+            to bottom,
+
+            var(--sky-top) 0%,
+            var(--sky-mid) 23%,
+            var(--sky-bottom) 42%,
+
+            var(--sea-top) 42%,
+            var(--sea-mid) 70%,
+            var(--sea-bottom) 100%
         );
-    }
 
-    /* =========================================================
-       Atmosphere
-       ========================================================= */
+    transition:
+        background 700ms ease;
+}
 
-    .atmosphere {
-      position: absolute;
-      inset: 0;
 
-      z-index: 1;
-      pointer-events: none;
+/* =========================================================
+   Theme Toggle
+========================================================= */
 
-      background:
+.theme-toggle {
+
+    position: absolute;
+
+    top: 18px;
+    right: 18px;
+
+    z-index: 100;
+
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    border:
+        1px solid
+        var(--button-border);
+
+    border-radius: 50%;
+
+    background:
+        var(--button-bg);
+
+    color:
+        var(--button-text);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(8px);
+
+    -webkit-backdrop-filter: blur(8px);
+
+    transition:
+        background 400ms ease,
+        border-color 400ms ease,
+        color 400ms ease,
+        transform 200ms ease;
+
+    appearance: none;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.06);
+}
+
+.theme-toggle:active {
+    transform: scale(.96);
+}
+
+.theme-toggle:focus-visible {
+
+    outline:
+        1px solid
+        var(--button-text);
+
+    outline-offset: 3px;
+}
+
+
+/*
+ * Simple sun / moon symbol.
+ *
+ * No emoji is used so appearance remains stable
+ * between operating systems.
+ */
+
+.theme-icon {
+
+    position: relative;
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        currentColor;
+
+    opacity: .72;
+
+    transition:
+        transform 500ms ease,
+        opacity 400ms ease;
+}
+
+
+/*
+ * Dark mode:
+ * moon-like crescent.
+ */
+
+.scene:not(.light) .theme-icon {
+
+    background:
+        transparent;
+
+    box-shadow:
+        3px -2px 0 -1px
+        var(--sky-top);
+
+    transform:
+        rotate(-20deg);
+}
+
+
+/*
+ * Light mode:
+ * sun-like circle.
+ */
+
+.scene.light .theme-icon {
+
+    background:
+        currentColor;
+
+    box-shadow:
+        0 -6px 0 -4px currentColor,
+        0 6px 0 -4px currentColor,
+        6px 0 0 -4px currentColor,
+        -6px 0 0 -4px currentColor,
+        4px 4px 0 -4px currentColor,
+        -4px -4px 0 -4px currentColor,
+        4px -4px 0 -4px currentColor,
+        -4px 4px 0 -4px currentColor;
+
+    transform:
+        rotate(0deg);
+}
+
+
+/* =========================================================
+   Atmosphere
+========================================================= */
+
+.atmosphere {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    background:
         radial-gradient(
-          ellipse at 50% 38%,
-          rgba(255,255,255,0.56) 0%,
-          rgba(255,255,255,0.26) 27%,
-          rgba(255,255,255,0) 65%
+            ellipse at 50% 36%,
+            rgba(150,175,190,.05) 0%,
+            rgba(100,125,140,.025) 30%,
+            transparent 65%
         );
+}
 
-      animation:
-        atmosphereBreath 12s ease-in-out infinite;
-    }
 
-    @keyframes atmosphereBreath {
-      0%,
-      100% {
-        opacity: .72;
-        transform: scale(1);
-      }
+/* =========================================================
+   Dark Stars
+========================================================= */
 
-      50% {
-        opacity: .92;
-        transform: scale(1.025);
-      }
-    }
+.scene:not(.light) .atmosphere::before {
 
-    /* =========================================================
-       Island window
-       
-       円のサイズは画面幅に応じて変化。
-       円の上側20%だけを見せる窓。
-       ========================================================= */
+    content: "";
 
-    .island-window {
-      position: absolute;
+    position: absolute;
 
-      left: 50%;
-      top: calc(37.5vh - clamp(20px, 3.6vw, 36px));
+    inset: 0;
 
-      width: clamp(100px, 18vw, 180px);
-      height: clamp(20px, 3.6vw, 36px);
+    background:
 
-      transform: translateX(-50%);
-
-      z-index: 10;
-
-      overflow: hidden;
-
-      pointer-events: none;
-    }
-
-    /* =========================================================
-       Island
-       ========================================================= */
-
-    .island {
-      position: absolute;
-
-      left: 0;
-      top: 0;
-
-      width: clamp(100px, 18vw, 180px);
-      height: clamp(100px, 18vw, 180px);
-
-      border-radius: 50%;
-
-      background:
         radial-gradient(
-          circle at 50% 100%,
-          rgba(54,91,98,.24) 0%,
-          rgba(61,98,105,.20) 42%,
-          rgba(74,110,116,.14) 66%,
-          rgba(92,126,131,.06) 84%,
-          rgba(105,137,141,0) 100%
-        );
+            circle at 11% 18%,
+            rgba(220,230,235,.38) 0 .7px,
+            transparent 1.3px
+        ),
 
-      filter:
-        blur(.6px)
-        saturate(.72);
-
-      opacity: .82;
-
-      animation:
-        islandDrift 14s ease-in-out infinite;
-    }
-
-    @keyframes islandDrift {
-
-      0%,
-      100% {
-        transform: scaleX(.995);
-      }
-
-      25% {
-        transform: scaleX(1.012);
-      }
-
-      50% {
-        transform: scaleX(.998);
-      }
-
-      75% {
-        transform: scaleX(1.008);
-      }
-    }
-
-    /* =========================================================
-       Island upper haze
-       ========================================================= */
-
-    .island::before {
-      content: "";
-
-      position: absolute;
-
-      left: 3%;
-      right: 3%;
-      top: 1%;
-
-      height: 42%;
-
-      border-radius:
-        50%
-        50%
-        35%
-        35% / 90%
-        90%
-        35%
-        35%;
-
-      background:
         radial-gradient(
-          ellipse at 50% 100%,
-          rgba(48,85,92,.15) 0%,
-          rgba(57,94,101,.11) 42%,
-          rgba(77,114,120,.045) 68%,
-          rgba(105,137,141,0) 100%
-        );
+            circle at 19% 31%,
+            rgba(220,230,235,.22) 0 .6px,
+            transparent 1.2px
+        ),
 
-      filter: blur(.8px);
-
-      opacity: .85;
-    }
-
-    /* =========================================================
-       Island lower haze
-       ========================================================= */
-
-    .island::after {
-      content: "";
-
-      position: absolute;
-
-      left: -8%;
-      right: -8%;
-      bottom: 8px;
-
-      height: 34%;
-
-      border-radius: 50%;
-
-      background:
         radial-gradient(
-          ellipse at 50% 30%,
-          rgba(237,246,248,.14) 0%,
-          rgba(237,246,248,.055) 42%,
-          rgba(237,246,248,0) 82%
-        );
+            circle at 27% 13%,
+            rgba(220,230,235,.28) 0 .7px,
+            transparent 1.3px
+        ),
 
-      filter: blur(5px);
-
-      opacity: .78;
-    }
-
-    /* =========================================================
-       Gap between island and horizon
-       ========================================================= */
-
-    .island-gap-mist {
-      position: absolute;
-
-      left: 50%;
-      top: calc(37.5vh - 1px);
-
-      width: clamp(124px, 23vw, 230px);
-      height: 10px;
-
-      transform: translateX(-50%);
-
-      z-index: 9;
-
-      pointer-events: none;
-
-      border-radius: 50%;
-
-      background:
         radial-gradient(
-          ellipse at center,
-          rgba(238,247,249,.08) 0%,
-          rgba(238,247,249,.035) 48%,
-          rgba(238,247,249,0) 100%
+            circle at 34% 25%,
+            rgba(220,230,235,.18) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 42% 9%,
+            rgba(220,230,235,.30) 0 .7px,
+            transparent 1.3px
+        ),
+
+        radial-gradient(
+            circle at 51% 20%,
+            rgba(220,230,235,.20) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 59% 12%,
+            rgba(220,230,235,.30) 0 .7px,
+            transparent 1.3px
+        ),
+
+        radial-gradient(
+            circle at 67% 27%,
+            rgba(220,230,235,.20) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 74% 15%,
+            rgba(220,230,235,.32) 0 .7px,
+            transparent 1.3px
+        ),
+
+        radial-gradient(
+            circle at 82% 24%,
+            rgba(220,230,235,.20) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 91% 11%,
+            rgba(220,230,235,.28) 0 .7px,
+            transparent 1.3px
+        ),
+
+        radial-gradient(
+            circle at 87% 34%,
+            rgba(220,230,235,.16) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 7% 37%,
+            rgba(220,230,235,.18) 0 .6px,
+            transparent 1.2px
+        ),
+
+        radial-gradient(
+            circle at 31% 36%,
+            rgba(220,230,235,.15) 0 .6px,
+            transparent 1.2px
         );
 
-      filter: blur(4px);
+    opacity: .72;
 
-      opacity: .55;
-    }
+    animation:
+        starLight 11s ease-in-out infinite alternate;
+}
 
-    /* =========================================================
-       Horizon
-       ========================================================= */
 
-    .horizon {
-      position: absolute;
+/* =========================================================
+   Light Atmosphere
+========================================================= */
 
-      left: -10%;
-      right: -10%;
-      top: 37.5vh;
+.scene.light .atmosphere {
 
-      height: 1px;
+    background:
+        radial-gradient(
+            ellipse at 50% 34%,
+            rgba(255,255,255,.48) 0%,
+            rgba(255,255,255,.22) 18%,
+            rgba(255,255,255,0) 46%
+        );
 
-      z-index: 13;
+    opacity: .8;
 
-      pointer-events: none;
+    animation:
+        atmosphereBreath 14s ease-in-out infinite;
+}
 
-      background:
+.scene.light .atmosphere::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 39%,
+            rgba(255,255,255,.22) 0%,
+            rgba(255,255,255,.08) 18%,
+            rgba(255,255,255,0) 42%
+        );
+
+    opacity: .55;
+
+    animation:
+        atmosphereShift 18s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Dark Sky Light
+========================================================= */
+
+.scene:not(.light) .atmosphere::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 30%;
+    height: 20%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 50%,
+            rgba(190,210,220,.055) 0%,
+            rgba(150,175,190,.025) 38%,
+            transparent 75%
+        );
+
+    filter: blur(14px);
+
+    animation:
+        skyLight 17s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   Island Window
+========================================================= */
+
+.island-window {
+
+    position: absolute;
+
+    left: 50%;
+
+    /*
+     * The visible island ends exactly
+     * 4px above the horizon.
+     */
+    top:
+        calc(
+            37.5vh
+            - var(--island-window-height)
+            - var(--island-horizon-gap)
+        );
+
+    width:
+        var(--island-size);
+
+    height:
+        var(--island-window-height);
+
+    transform:
+        translateX(-50%);
+
+    overflow: hidden;
+
+    z-index: 30;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Island
+========================================================= */
+
+.island {
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width:
+        var(--island-size);
+
+    height:
+        var(--island-size);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 42%,
+            var(--island-main) 0%,
+            var(--island-mid) 28%,
+            var(--island-low) 57%,
+            var(--island-bottom) 76%,
+            rgba(10,14,17,0) 100%
+        );
+
+    filter:
+        blur(1.8px);
+
+    transform-origin:
+        center center;
+
+    animation:
+        islandDrift
+        9s ease-in-out infinite alternate;
+
+    transition:
+        opacity 600ms ease,
+        filter 600ms ease;
+}
+
+
+/*
+ * Dark mode island is the original strength.
+ */
+
+.scene:not(.light) .island {
+    opacity: 1;
+}
+
+
+/*
+ * Light mode:
+ * considerably weaker.
+ */
+.scene.light .island {
+
+    opacity: .92;
+
+    filter:
+        blur(1.15px)
+        saturate(.82);
+}
+
+
+/* =========================================================
+   Island Upper Atmosphere
+========================================================= */
+
+.island::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 3%;
+    right: 3%;
+
+    top: 1%;
+
+    height: 42%;
+
+    border-radius:
+        50% 50% 35% 35% /
+        90% 90% 35% 35%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 100%,
+            var(--island-atmosphere) 0%,
+            rgba(92,108,116,.085) 42%,
+            rgba(65,80,88,.03) 68%,
+            transparent 100%
+        );
+
+    filter:
+        blur(.8px);
+
+    opacity: .8;
+}
+
+
+/*
+ * Light mode upper atmosphere is weaker.
+ */
+
+.scene.light .island::before {
+
+    opacity: .42;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 100%,
+            rgba(70,119,123,.055) 0%,
+            rgba(70,119,123,.028) 42%,
+            rgba(70,119,123,0) 70%
+        );
+}
+
+
+/* =========================================================
+   Island Lower Haze
+========================================================= */
+
+.island::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: -8%;
+    right: -8%;
+
+    bottom: 8px;
+
+    height: 34%;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 30%,
+            rgba(180,195,202,.055) 0%,
+            rgba(150,170,180,.025) 42%,
+            transparent 82%
+        );
+
+    filter:
+        blur(5px);
+
+    opacity: .72;
+}
+
+
+/*
+ * Very restrained in light mode.
+ */
+
+.scene.light .island::after {
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(220,238,239,.08) 0%,
+            rgba(220,238,239,.025) 42%,
+            rgba(220,238,239,0) 80%
+        );
+
+    opacity: .45;
+}
+
+
+/* =========================================================
+   Gap Mist
+========================================================= */
+
+.island-gap-mist {
+
+    position: absolute;
+
+    left: 50%;
+
+    /*
+     * Centered inside the 4px visual gap.
+     *
+     * The actual geometry remains 4px.
+     * This layer is intentionally very subtle.
+     */
+    top:
+        calc(
+            37.5vh
+            - var(--island-horizon-gap)
+        );
+
+    width:
+        clamp(112px, 20vw, 200px);
+
+    height: 6px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 32;
+
+    pointer-events: none;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(190,205,210,.08) 0%,
+            rgba(165,185,195,.025) 42%,
+            transparent 75%
+        );
+
+    filter:
+        blur(3px);
+
+    opacity: .32;
+
+    animation:
+        gapMist 9s ease-in-out infinite alternate;
+}
+
+
+/*
+ * Light gap mist is particularly restrained.
+ *
+ * This is important because a bright mist inside
+ * the 4px gap can make the gap look much larger.
+ */
+
+.scene.light .island-gap-mist {
+
+    width:
+        clamp(100px, 18vw, 180px);
+
+    height: 5px;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255,255,255,.12) 0%,
+            rgba(244,249,250,.045) 36%,
+            rgba(244,249,250,0) 74%
+        );
+
+    opacity: .28;
+
+    filter:
+        blur(2.5px);
+}
+
+
+/* =========================================================
+   Horizon
+========================================================= */
+
+.horizon {
+
+    position: absolute;
+
+    left: -10%;
+    right: -10%;
+
+    top: 37.5vh;
+
+    height: 1px;
+
+    z-index: 34;
+
+    pointer-events: none;
+
+    background:
         linear-gradient(
-          90deg,
-          transparent 0%,
-          rgba(255,255,255,.16) 18%,
-          rgba(255,255,255,.36) 50%,
-          rgba(255,255,255,.16) 82%,
-          transparent 100%
+            to right,
+            transparent 0%,
+            rgba(185,200,210,.06) 18%,
+            rgba(205,215,220,.11) 50%,
+            rgba(185,200,210,.06) 82%,
+            transparent 100%
         );
 
-      filter: blur(.35px);
-    }
+    filter:
+        blur(.25px);
+}
 
-    /* =========================================================
-       Ocean
-       ========================================================= */
 
-    .ocean {
-      position: absolute;
+/* =========================================================
+   Light Horizon
+========================================================= */
 
-      inset: 37.5vh 0 0;
+.scene.light .horizon {
 
-      z-index: 5;
+    left: 0;
+    right: 0;
 
-      overflow: hidden;
-
-      background:
+    background:
         linear-gradient(
-          180deg,
-          rgba(170,201,215,.08) 0%,
-          rgba(158,193,209,.18) 20%,
-          rgba(139,184,201,.30) 52%,
-          rgba(120,172,192,.44) 100%
-        );
-    }
-
-    /* =========================================================
-       Ocean waves
-       ========================================================= */
-
-    .ocean::before {
-      content: "";
-
-      position: absolute;
-
-      inset: -8% -15% -5%;
-
-      z-index: 6;
-
-      pointer-events: none;
-
-      background:
-
-        radial-gradient(
-          ellipse 90px 4px at 10% 12%,
-          rgba(255,255,255,.075) 0%,
-          rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-          ellipse 130px 4px at 45% 20%,
-          rgba(255,255,255,.065) 0%,
-          rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-          ellipse 110px 4px at 82% 15%,
-          rgba(255,255,255,.06) 0%,
-          rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-          ellipse 150px 5px at 25% 32%,
-          rgba(255,255,255,.055) 0%,
-          rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-          ellipse 120px 4px at 68% 38%,
-          rgba(255,255,255,.05) 0%,
-          rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-          ellipse 170px 5px at 92% 48%,
-          rgba(255,255,255,.045) 0%,
-          rgba(255,255,255,0) 75%
+            to right,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,.38) 20%,
+            rgba(255,255,255,.68) 50%,
+            rgba(255,255,255,.38) 80%,
+            rgba(255,255,255,0) 100%
         );
 
-      background-size:
-        420px 150px,
-        510px 170px,
-        460px 150px,
-        560px 190px,
-        500px 180px,
-        620px 210px;
+    opacity: .72;
 
-      background-position:
-        0 0,
-        0 25px,
-        0 70px,
-        0 110px,
-        0 150px,
-        0 200px;
+    animation:
+        horizonPulse 10s ease-in-out infinite;
+}
 
-      opacity: .65;
 
-      will-change: transform;
+/* =========================================================
+   Ocean
+========================================================= */
 
-      animation:
-        distantWaves 13s ease-in-out infinite;
-    }
+.ocean {
 
-    .ocean::after {
-      content: "";
+    position: absolute;
 
-      position: absolute;
+    left: 0;
+    right: 0;
 
-      inset: 5% -18% -8%;
+    top: 37.5vh;
+    bottom: 0;
 
-      z-index: 7;
+    overflow: hidden;
 
-      pointer-events: none;
+    z-index: 5;
 
-      background:
-
-        radial-gradient(
-          ellipse 180px 7px at 8% 18%,
-          rgba(255,255,255,.095) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 230px 7px at 38% 30%,
-          rgba(255,255,255,.075) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 200px 7px at 70% 24%,
-          rgba(255,255,255,.085) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 260px 8px at 94% 42%,
-          rgba(255,255,255,.065) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 210px 7px at 20% 58%,
-          rgba(255,255,255,.06) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 280px 8px at 58% 68%,
-          rgba(255,255,255,.055) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-          ellipse 230px 7px at 88% 82%,
-          rgba(255,255,255,.05) 0%,
-          rgba(255,255,255,0) 72%
-        );
-
-      background-size:
-        520px 190px,
-        650px 230px,
-        580px 210px,
-        700px 250px,
-        560px 220px,
-        720px 270px,
-        620px 250px;
-
-      background-position:
-        0 0,
-        80px 20px,
-        -40px 80px,
-        120px 120px,
-        -80px 160px,
-        60px 220px,
-        -100px 280px;
-
-      opacity: .72;
-
-      will-change: transform;
-
-      animation:
-        nearWaves 8.5s ease-in-out infinite;
-    }
-
-    /* =========================================================
-       Waves animation
-       ========================================================= */
-
-    @keyframes distantWaves {
-
-      0% {
-        transform:
-          translate3d(-7%,0,0)
-          rotate(-.15deg)
-          scaleX(.98)
-          scaleY(.96);
-      }
-
-      15% {
-        transform:
-          translate3d(-3%,1%,0)
-          rotate(.08deg)
-          scaleX(1.015)
-          scaleY(1.035);
-      }
-
-      30% {
-        transform:
-          translate3d(2%,-.6%,0)
-          rotate(-.08deg)
-          scaleX(.985)
-          scaleY(.975);
-      }
-
-      45% {
-        transform:
-          translate3d(7%,.8%,0)
-          rotate(.16deg)
-          scaleX(1.025)
-          scaleY(1.05);
-      }
-
-      60% {
-        transform:
-          translate3d(4%,-.8%,0)
-          rotate(-.10deg)
-          scaleX(.99)
-          scaleY(.97);
-      }
-
-      75% {
-        transform:
-          translate3d(-1%,.7%,0)
-          rotate(.10deg)
-          scaleX(1.02)
-          scaleY(1.04);
-      }
-
-      90% {
-        transform:
-          translate3d(-5%,-.4%,0)
-          rotate(-.06deg)
-          scaleX(.99)
-          scaleY(.98);
-      }
-
-      100% {
-        transform:
-          translate3d(-7%,0,0)
-          rotate(-.15deg)
-          scaleX(.98)
-          scaleY(.96);
-      }
-    }
-
-    @keyframes nearWaves {
-
-      0% {
-        transform:
-          translate3d(8%,0,0)
-          rotate(.18deg)
-          scaleX(.96)
-          scaleY(.94);
-      }
-
-      12% {
-        transform:
-          translate3d(4%,1.8%,0)
-          rotate(-.08deg)
-          scaleX(1.02)
-          scaleY(1.055);
-      }
-
-      25% {
-        transform:
-          translate3d(-1%,-.7%,0)
-          rotate(.14deg)
-          scaleX(.975)
-          scaleY(.965);
-      }
-
-      38% {
-        transform:
-          translate3d(-7%,1.5%,0)
-          rotate(-.18deg)
-          scaleX(1.035)
-          scaleY(1.075);
-      }
-
-      50% {
-        transform:
-          translate3d(-4%,-.8%,0)
-          rotate(.08deg)
-          scaleX(.97)
-          scaleY(.955);
-      }
-
-      63% {
-        transform:
-          translate3d(2%,1.2%,0)
-          rotate(-.13deg)
-          scaleX(1.025)
-          scaleY(1.065);
-      }
-
-      76% {
-        transform:
-          translate3d(7%,-.6%,0)
-          rotate(.17deg)
-          scaleX(.98)
-          scaleY(.97);
-      }
-
-      88% {
-        transform:
-          translate3d(3%,1%,0)
-          rotate(-.08deg)
-          scaleX(1.02)
-          scaleY(1.045);
-      }
-
-      100% {
-        transform:
-          translate3d(8%,0,0)
-          rotate(.18deg)
-          scaleX(.96)
-          scaleY(.94);
-      }
-    }
-
-    /* =========================================================
-       Water layers
-       ========================================================= */
-
-    .water,
-    .surface-far,
-    .surface-mid,
-    .surface-near {
-      position: absolute;
-
-      left: -12%;
-      width: 124%;
-
-      pointer-events: none;
-
-      will-change: transform;
-    }
-
-    .water {
-      top: 2%;
-      height: 45%;
-
-      z-index: 5;
-
-      background:
-        radial-gradient(
-          ellipse 42% 8% at 18% 30%,
-          rgba(255,255,255,.18) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-          ellipse 38% 7% at 70% 48%,
-          rgba(255,255,255,.13) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-          ellipse 48% 8% at 42% 74%,
-          rgba(255,255,255,.10) 0%,
-          rgba(255,255,255,0) 72%
-        );
-
-      animation:
-        waterDrift 17s ease-in-out infinite;
-    }
-
-    .surface-far {
-      top: 7%;
-      height: 34%;
-
-      z-index: 5;
-
-      background:
-        radial-gradient(
-          ellipse 34% 10% at 22% 35%,
-          rgba(255,255,255,.13) 0%,
-          rgba(255,255,255,0) 70%
-        ),
-        radial-gradient(
-          ellipse 30% 8% at 77% 65%,
-          rgba(255,255,255,.10) 0%,
-          rgba(255,255,255,0) 72%
-        );
-
-      animation:
-        surfaceFar 21s ease-in-out infinite;
-    }
-
-    .surface-mid {
-      top: 20%;
-      height: 38%;
-
-      z-index: 5;
-
-      background:
-        radial-gradient(
-          ellipse 46% 9% at 8% 38%,
-          rgba(255,255,255,.13) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-          ellipse 40% 8% at 57% 28%,
-          rgba(255,255,255,.10) 0%,
-          rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-          ellipse 44% 9% at 91% 67%,
-          rgba(255,255,255,.11) 0%,
-          rgba(255,255,255,0) 72%
-        );
-
-      animation:
-        surfaceMid 13s ease-in-out infinite;
-    }
-
-    .surface-near {
-      top: 43%;
-      height: 50%;
-
-      z-index: 5;
-
-      background:
-        radial-gradient(
-          ellipse 52% 11% at 24% 36%,
-          rgba(255,255,255,.11) 0%,
-          rgba(255,255,255,0) 70%
-        ),
-        radial-gradient(
-          ellipse 46% 10% at 72% 58%,
-          rgba(255,255,255,.09) 0%,
-          rgba(255,255,255,0) 72%
-        );
-
-      animation:
-        surfaceNear 16s ease-in-out infinite;
-    }
-
-    @keyframes waterDrift {
-
-      0%,
-      100% {
-        transform:
-          translate3d(-3%,0,0)
-          scaleY(.98);
-      }
-
-      50% {
-        transform:
-          translate3d(4%,2.5%,0)
-          scaleY(1.08);
-      }
-    }
-
-    @keyframes surfaceFar {
-
-      0%,
-      100% {
-        transform:
-          translate3d(3%,-1%,0)
-          scale(.98);
-      }
-
-      50% {
-        transform:
-          translate3d(-5%,1.5%,0)
-          scale(1.07);
-      }
-    }
-
-    @keyframes surfaceMid {
-
-      0%,
-      100% {
-        transform:
-          translate3d(-4%,0,0)
-          scaleY(.97);
-      }
-
-      25% {
-        transform:
-          translate3d(0%,1.3%,0)
-          scaleY(1.04);
-      }
-
-      50% {
-        transform:
-          translate3d(5%,-1%,0)
-          scaleY(1.09);
-      }
-
-      75% {
-        transform:
-          translate3d(1%,1%,0)
-          scaleY(1.03);
-      }
-    }
-
-    @keyframes surfaceNear {
-
-      0%,
-      100% {
-        transform:
-          translate3d(4%,0,0)
-          scale(.97);
-      }
-
-      25% {
-        transform:
-          translate3d(0%,2%,0)
-          scale(1.035);
-      }
-
-      50% {
-        transform:
-          translate3d(-5%,-1%,0)
-          scale(1.08);
-      }
-
-      75% {
-        transform:
-          translate3d(-1%,1.5%,0)
-          scale(1.03);
-      }
-    }
-
-    /* =========================================================
-       Water gaps
-       ========================================================= */
-
-    .water-gaps {
-      position: absolute;
-      inset: 0;
-
-      z-index: 8;
-
-      pointer-events: none;
-
-      background:
-        radial-gradient(
-          ellipse 22% 4% at 18% 18%,
-          rgba(255,255,255,.08),
-          transparent 72%
-        ),
-        radial-gradient(
-          ellipse 28% 5% at 76% 30%,
-          rgba(255,255,255,.07),
-          transparent 72%
-        ),
-        radial-gradient(
-          ellipse 20% 4% at 42% 55%,
-          rgba(255,255,255,.06),
-          transparent 72%
-        ),
-        radial-gradient(
-          ellipse 34% 6% at 83% 76%,
-          rgba(255,255,255,.05),
-          transparent 72%
-        );
-
-      animation:
-        gapsDrift 14s ease-in-out infinite;
-    }
-
-    @keyframes gapsDrift {
-
-      0%,
-      100% {
-        transform:
-          translate3d(0,0,0)
-          scaleY(.98);
-      }
-
-      25% {
-        transform:
-          translate3d(-2%,.8%,0)
-          scaleY(1.04);
-      }
-
-      50% {
-        transform:
-          translate3d(-4%,-.4%,0)
-          scaleY(.97);
-      }
-
-      75% {
-        transform:
-          translate3d(-1%,.7%,0)
-          scaleY(1.05);
-      }
-    }
-
-    /* =========================================================
-       Island shadow
-       ========================================================= */
-
-    .island-shadow {
-      position: absolute;
-
-      left: 50%;
-      top: calc(37.5vh + 3px);
-
-      width: clamp(108px, 19.5vw, 195px);
-      height: clamp(48px, 8.7vw, 87px);
-
-      transform: translateX(-50%);
-
-      z-index: 11;
-
-      pointer-events: none;
-
-      border-radius: 50%;
-
-      background:
-        radial-gradient(
-          ellipse at 50% 8%,
-          rgba(65,102,108,.11) 0%,
-          rgba(73,110,116,.075) 30%,
-          rgba(88,122,127,.04) 55%,
-          rgba(109,140,144,0) 82%
-        );
-
-      filter: blur(5px);
-
-      opacity: .72;
-
-      animation:
-        islandShadow 9s ease-in-out infinite;
-    }
-
-    @keyframes islandShadow {
-
-      0%,
-      100% {
-        transform:
-          translateX(-50%)
-          scaleX(.94)
-          scaleY(.92);
-
-        opacity: .56;
-      }
-
-      20% {
-        transform:
-          translateX(-50%)
-          scaleX(1.08)
-          scaleY(1.02);
-
-        opacity: .72;
-      }
-
-      43% {
-        transform:
-          translateX(-50%)
-          scaleX(.97)
-          scaleY(1.08);
-
-        opacity: .61;
-      }
-
-      68% {
-        transform:
-          translateX(-50%)
-          scaleX(1.10)
-          scaleY(.95);
-
-        opacity: .68;
-      }
-
-      100% {
-        transform:
-          translateX(-50%)
-          scaleX(.94)
-          scaleY(.92);
-
-        opacity: .56;
-      }
-    }
-
-    /* =========================================================
-       Ocean mist
-       ========================================================= */
-
-    .ocean-mist {
-      position: absolute;
-
-      inset: 36vh 0 auto;
-
-      height: 12vh;
-
-      z-index: 12;
-
-      pointer-events: none;
-
-      background:
+    background:
         linear-gradient(
-          180deg,
-          rgba(239,246,248,.18),
-          rgba(239,246,248,0)
+            to bottom,
+
+            var(--sea-top) 0%,
+            var(--sea-mid) 70%,
+            var(--sea-bottom) 100%
+        );
+}
+
+
+/* =========================================================
+   Dark Ocean Far
+========================================================= */
+
+.scene:not(.light) .ocean::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 8%;
+
+    width: 360px;
+    height: 52px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(.94);
+
+    border-top:
+        1px solid
+        rgba(180,200,210,.09);
+
+    border-radius: 50%;
+
+    filter:
+        blur(1px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanWaveFar
+        8s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   Dark Ocean Middle
+========================================================= */
+
+.scene:not(.light) .ocean::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 17%;
+
+    width: 520px;
+    height: 72px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(1);
+
+    border-top:
+        1px solid
+        rgba(170,190,200,.075);
+
+    border-radius: 50%;
+
+    filter:
+        blur(1.2px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanWaveMid
+        10s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   Dark Ocean Layers
+========================================================= */
+
+.scene:not(.light) .water {
+
+    position: absolute;
+
+    left: 50%;
+    top: 31%;
+
+    width: 700px;
+    height: 90px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(.96);
+
+    border-top:
+        1px solid
+        rgba(170,190,200,.065);
+
+    border-radius: 50%;
+
+    filter:
+        blur(1.5px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanWaveNear
+        12s ease-in-out infinite alternate;
+}
+
+.scene:not(.light) .surface-far {
+
+    position: absolute;
+
+    left: 50%;
+    top: 43%;
+
+    width: 860px;
+    height: 100px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(.96);
+
+    border-top:
+        1px solid
+        rgba(165,185,195,.055);
+
+    border-radius: 50%;
+
+    filter:
+        blur(1.5px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanSurfaceFar
+        14s ease-in-out infinite alternate;
+}
+
+.scene:not(.light) .surface-mid {
+
+    position: absolute;
+
+    left: 50%;
+    top: 58%;
+
+    width: 1050px;
+    height: 120px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(1);
+
+    border-top:
+        1px solid
+        rgba(155,175,185,.048);
+
+    border-radius: 50%;
+
+    filter:
+        blur(2px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanSurfaceMid
+        16s ease-in-out infinite alternate;
+}
+
+.scene:not(.light) .surface-near {
+
+    position: absolute;
+
+    left: 50%;
+    top: 75%;
+
+    width: 1300px;
+    height: 150px;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scaleX(.95);
+
+    border-top:
+        1px solid
+        rgba(145,165,175,.04);
+
+    border-radius: 50%;
+
+    filter:
+        blur(2px);
+
+    will-change:
+        transform;
+
+    animation:
+        oceanSurfaceNear
+        18s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   Light Ocean
+========================================================= */
+
+.scene.light .ocean {
+
+    background:
+        linear-gradient(
+            to bottom,
+            #d8e7ec 0%,
+            #d1e2e8 30%,
+            #c8dce3 65%,
+            #c1d6de 100%
+        );
+}
+
+.scene.light .ocean::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -8% -10%;
+
+    background:
+        radial-gradient(
+            ellipse at 18% 16%,
+            rgba(255,255,255,.26) 0%,
+            rgba(255,255,255,0) 28%
+        ),
+        radial-gradient(
+            ellipse at 72% 30%,
+            rgba(255,255,255,.18) 0%,
+            rgba(255,255,255,0) 31%
+        ),
+        radial-gradient(
+            ellipse at 42% 72%,
+            rgba(255,255,255,.12) 0%,
+            rgba(255,255,255,0) 34%
         );
 
-      filter: blur(7px);
+    filter:
+        blur(8px);
 
-      opacity: .48;
-    }
+    opacity: .7;
 
-    /* =========================================================
-       Brand
-       ========================================================= */
+    animation:
+        oceanAtmosphere
+        18s ease-in-out infinite;
+}
 
-    .brand {
-      position: absolute;
+.scene.light .ocean::after {
 
-      left: 50%;
-      bottom: 8.5vh;
+    content: "";
 
-      z-index: 20;
+    position: absolute;
 
-      transform: translateX(-50%);
+    left: -10%;
+    right: -10%;
 
-      text-align: center;
+    top: 0;
+    height: 46%;
 
-      white-space: nowrap;
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(255,255,255,.32) 0%,
+            rgba(255,255,255,.10) 32%,
+            rgba(255,255,255,0) 70%
+        );
 
-      user-select: none;
-    }
+    filter:
+        blur(5px);
 
-    .brand-name {
-      margin: 0;
+    opacity: .7;
 
-      font-size: clamp(15px, 1.25vw, 19px);
-      font-weight: 400;
+    animation:
+        oceanGlow
+        13s ease-in-out infinite;
+}
 
-      letter-spacing: .24em;
-      text-indent: .24em;
 
-      color: rgba(35,57,66,.48);
-    }
+/* =========================================================
+   Light Water
+========================================================= */
 
-    .brand-status {
-      margin-top: 9px;
+.scene.light .water {
 
-      font-family:
+    position: absolute;
+
+    left: -12%;
+    right: -12%;
+
+    top: 0;
+    bottom: 0;
+
+    background:
+
+        radial-gradient(
+            ellipse 42% 5% at 12% 13%,
+            rgba(255,255,255,.38) 0%,
+            rgba(255,255,255,.16) 35%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 34% 4% at 38% 22%,
+            rgba(255,255,255,.28) 0%,
+            rgba(255,255,255,.10) 38%,
+            rgba(255,255,255,0) 75%
+        ),
+
+        radial-gradient(
+            ellipse 48% 5% at 72% 15%,
+            rgba(255,255,255,.30) 0%,
+            rgba(255,255,255,.10) 38%,
+            rgba(255,255,255,0) 75%
+        ),
+
+        radial-gradient(
+            ellipse 42% 5% at 88% 36%,
+            rgba(255,255,255,.24) 0%,
+            rgba(255,255,255,.08) 38%,
+            rgba(255,255,255,0) 74%
+        ),
+
+        radial-gradient(
+            ellipse 48% 6% at 24% 50%,
+            rgba(255,255,255,.22) 0%,
+            rgba(255,255,255,.08) 36%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 52% 6% at 67% 60%,
+            rgba(255,255,255,.22) 0%,
+            rgba(255,255,255,.07) 38%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 54% 7% at 42% 82%,
+            rgba(255,255,255,.18) 0%,
+            rgba(255,255,255,.06) 40%,
+            rgba(255,255,255,0) 74%
+        );
+
+    opacity: .78;
+
+    filter:
+        blur(.2px);
+
+    animation:
+        waterDrift
+        17s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Light Surfaces
+========================================================= */
+
+.scene.light .surface-far {
+
+    position: absolute;
+
+    left: -10%;
+    right: -10%;
+
+    top: 8%;
+    height: 25%;
+
+    background:
+        repeating-radial-gradient(
+            ellipse at 50% 0%,
+            rgba(255,255,255,.34) 0px,
+            rgba(255,255,255,.18) 1px,
+            rgba(255,255,255,0) 4px,
+            rgba(255,255,255,0) 16px
+        );
+
+    opacity: .54;
+
+    filter:
+        blur(.4px);
+
+    transform-origin:
+        center top;
+
+    animation:
+        surfaceFar
+        12s ease-in-out infinite;
+}
+
+.scene.light .surface-mid {
+
+    position: absolute;
+
+    left: -12%;
+    right: -12%;
+
+    top: 27%;
+    height: 37%;
+
+    background:
+        repeating-radial-gradient(
+            ellipse at 50% 0%,
+            rgba(255,255,255,.30) 0px,
+            rgba(255,255,255,.12) 1px,
+            rgba(255,255,255,0) 5px,
+            rgba(255,255,255,0) 20px
+        );
+
+    opacity: .66;
+
+    filter:
+        blur(.55px);
+
+    transform-origin:
+        center top;
+
+    animation:
+        surfaceMid
+        9s ease-in-out infinite;
+}
+
+.scene.light .surface-near {
+
+    position: absolute;
+
+    left: -15%;
+    right: -15%;
+
+    top: 53%;
+    bottom: -5%;
+
+    background:
+        repeating-radial-gradient(
+            ellipse at 50% 0%,
+            rgba(255,255,255,.25) 0px,
+            rgba(255,255,255,.10) 1px,
+            rgba(255,255,255,0) 6px,
+            rgba(255,255,255,0) 24px
+        );
+
+    opacity: .62;
+
+    filter:
+        blur(.7px);
+
+    transform-origin:
+        center top;
+
+    animation:
+        surfaceNear
+        7s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Water Gaps
+========================================================= */
+
+.scene:not(.light) .water-gaps {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 8;
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse at 30% 27%,
+            rgba(190,205,210,.045) 0%,
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 72% 41%,
+            rgba(185,200,210,.04) 0%,
+            transparent 40%
+        ),
+        radial-gradient(
+            ellipse at 42% 67%,
+            rgba(170,190,200,.035) 0%,
+            transparent 45%
+        );
+
+    opacity: .88;
+
+    animation:
+        waterAtmosphere
+        13s ease-in-out infinite alternate;
+}
+
+.scene.light .water-gaps {
+
+    position: absolute;
+
+    left: -15%;
+    right: -15%;
+
+    top: 7%;
+    bottom: 0;
+
+    background:
+
+        radial-gradient(
+            ellipse 22% 1.5% at 16% 10%,
+            rgba(255,255,255,.54) 0%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 28% 1.2% at 52% 18%,
+            rgba(255,255,255,.42) 0%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 18% 1.5% at 82% 12%,
+            rgba(255,255,255,.46) 0%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 26% 1.5% at 31% 39%,
+            rgba(255,255,255,.36) 0%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 30% 1.4% at 73% 46%,
+            rgba(255,255,255,.34) 0%,
+            rgba(255,255,255,0) 72%
+        ),
+
+        radial-gradient(
+            ellipse 32% 1.8% at 48% 71%,
+            rgba(255,255,255,.30) 0%,
+            rgba(255,255,255,0) 72%
+        );
+
+    opacity: .62;
+
+    filter:
+        blur(.35px);
+
+    animation:
+        waterGaps
+        11s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Light Ocean Mist
+========================================================= */
+
+.scene.light .ocean-mist {
+
+    position: absolute;
+
+    left: -10%;
+    right: -10%;
+
+    top: 0;
+
+    height: 18%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(246,250,251,.44) 0%,
+            rgba(246,250,251,.18) 34%,
+            rgba(246,250,251,0) 100%
+        );
+
+    filter:
+        blur(4px);
+
+    opacity: .65;
+
+    animation:
+        oceanMist
+        13s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Dark Ocean Mist
+========================================================= */
+
+.scene:not(.light) .ocean-mist {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 0;
+
+    height: 35%;
+
+    z-index: 20;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(175,195,205,.045),
+            rgba(150,175,185,.018) 40%,
+            transparent 100%
+        );
+
+    filter:
+        blur(7px);
+
+    opacity: .48;
+
+    animation:
+        oceanMistDark
+        15s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   Island Reflection
+========================================================= */
+
+.island-shadow {
+
+    position: absolute;
+
+    left: 50%;
+
+    /*
+     * Almost directly under the horizon.
+     *
+     * Horizon = 37.5vh
+     * Reflection = +1px
+     */
+    top:
+        calc(
+            37.5vh
+            + var(--reflection-offset)
+        );
+
+    width:
+        calc(var(--island-size) * .88);
+
+    /*
+     * Original 108 : 48 ratio preserved.
+     */
+    aspect-ratio:
+        108 / 48;
+
+    height: auto;
+
+    transform:
+        translateX(-50%)
+        scaleY(.66);
+
+    transform-origin:
+        top center;
+
+    z-index: 31;
+
+    pointer-events: none;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse at center top,
+            var(--reflection-main) 0%,
+            var(--reflection-mid) 28%,
+            var(--reflection-low) 55%,
+            transparent 76%
+        );
+
+    filter:
+        blur(3px);
+
+    opacity: .62;
+
+    animation:
+        reflectionPulse
+        8s ease-in-out infinite;
+}
+
+
+/*
+ * Light reflection:
+ * closer to the island and significantly more restrained.
+ */
+
+.scene.light .island-shadow {
+
+    width:
+        calc(var(--island-size) * .78);
+
+    transform:
+        translateX(-50%)
+        scaleY(.52);
+
+    background:
+        radial-gradient(
+            ellipse at center top,
+            rgba(63,111,117,.075) 0%,
+            rgba(63,111,117,.042) 28%,
+            rgba(63,111,117,.016) 54%,
+            rgba(63,111,117,0) 76%
+        );
+
+    filter:
+        blur(2.8px);
+
+    opacity: .52;
+
+    animation:
+        reflectionPulseLight
+        8s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Reflection Line
+========================================================= */
+
+.island-shadow::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 1px;
+
+    width:
+        calc(var(--island-size) * .78);
+
+    aspect-ratio:
+        92 / 19;
+
+    height: auto;
+
+    transform:
+        translateX(-50%);
+
+    border-top:
+        1px solid
+        var(--reflection-line);
+
+    border-left:
+        1px solid
+        rgba(180,195,205,.018);
+
+    border-right:
+        1px solid
+        rgba(180,195,205,.018);
+
+    border-radius: 50%;
+
+    filter:
+        blur(.6px);
+
+    animation:
+        reflectionLine
+        6.5s ease-in-out infinite alternate;
+}
+
+
+/*
+ * Light mode line is almost imperceptible.
+ */
+
+.scene.light .island-shadow::before {
+
+    width:
+        calc(var(--island-size) * .66);
+
+    border-top:
+        1px solid
+        rgba(72,119,124,.038);
+
+    border-left:
+        1px solid
+        rgba(72,119,124,.008);
+
+    border-right:
+        1px solid
+        rgba(72,119,124,.008);
+
+    filter:
+        blur(.8px);
+
+    opacity: .62;
+}
+
+
+/* =========================================================
+   Brand
+========================================================= */
+
+.brand {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 8.5vh;
+
+    z-index: 50;
+
+    transform:
+        translateX(-50%);
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    user-select: none;
+}
+
+.brand-name {
+
+    margin: 0;
+
+    font-size:
+        clamp(15px,1.25vw,19px);
+
+    font-weight: 400;
+
+    letter-spacing:
+        .24em;
+
+    text-indent:
+        .24em;
+
+    color:
+        var(--text-main);
+
+    transition:
+        color 600ms ease;
+}
+
+.brand-status {
+
+    margin-top: 9px;
+
+    font-family:
         "SFMono-Regular",
         "Roboto Mono",
         "Menlo",
         monospace;
 
-      font-size: 7px;
-      line-height: 1;
+    font-size: 7px;
+    line-height: 1;
 
-      letter-spacing: .20em;
-      text-indent: .20em;
+    letter-spacing:
+        .20em;
 
-      color: rgba(35,57,66,.27);
+    text-indent:
+        .20em;
 
-      text-transform: uppercase;
+    color:
+        var(--text-sub);
+
+    text-transform:
+        uppercase;
+
+    transition:
+        color 600ms ease;
+}
+
+.status-dot {
+
+    display: inline-block;
+
+    width: 3px;
+    height: 3px;
+
+    margin-right: 6px;
+
+    border-radius: 50%;
+
+    background:
+        currentColor;
+
+    vertical-align: 1px;
+
+    animation:
+        statusPulse
+        3.2s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Light Brand
+========================================================= */
+
+.scene.light .brand-name {
+
+    color:
+        rgba(55,79,87,.62);
+}
+
+.scene.light .brand-status {
+
+    color:
+        rgba(66,87,94,.48);
+}
+
+
+/* =========================================================
+   Animations — Atmosphere
+========================================================= */
+
+@keyframes starLight {
+
+    0% {
+        opacity: .48;
+
+        filter: blur(0);
+
+        transform:
+            translate3d(-1px,0,0)
+            scale(.99);
     }
 
-    .status-dot {
-      display: inline-block;
+    35% {
+        opacity: .72;
 
-      width: 3px;
-      height: 3px;
+        filter: blur(.15px);
 
-      margin-right: 6px;
-
-      border-radius: 50%;
-
-      background: rgba(35,57,66,.25);
-
-      vertical-align: 1px;
-
-      animation:
-        statusPulse 3.2s ease-in-out infinite;
+        transform:
+            translate3d(0,-.4px,0)
+            scale(1);
     }
 
-    @keyframes statusPulse {
+    68% {
+        opacity: .84;
 
-      0%,
-      100% {
+        filter: blur(.3px);
+
+        transform:
+            translate3d(1px,.3px,0)
+            scale(1.008);
+    }
+
+    100% {
+        opacity: .55;
+
+        filter: blur(0);
+
+        transform:
+            translate3d(0,0,0)
+            scale(.995);
+    }
+}
+
+@keyframes atmosphereBreath {
+
+    0%,
+    100% {
+        opacity: .72;
+    }
+
+    50% {
+        opacity: .9;
+    }
+}
+
+@keyframes atmosphereShift {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-1%,0,0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate3d(1%,.5%,0)
+            scale(1.025);
+    }
+}
+
+@keyframes skyLight {
+
+    0% {
+        opacity: .55;
+
+        transform:
+            translate3d(-12px,0,0)
+            scaleX(.98);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translate3d(12px,-2px,0)
+            scaleX(1.025);
+    }
+}
+
+
+/* =========================================================
+   Animations — Island
+========================================================= */
+
+@keyframes islandDrift {
+
+    0% {
+        transform:
+            scaleX(1)
+            scaleY(1)
+            translate3d(0,0,0);
+    }
+
+    100% {
+        transform:
+            scaleX(1.015)
+            scaleY(.985)
+            translate3d(0,-1px,0);
+    }
+}
+
+@keyframes gapMist {
+
+    0% {
+        opacity: .24;
+
+        transform:
+            translateX(-50%)
+            scaleX(.96);
+    }
+
+    100% {
+        opacity: .38;
+
+        transform:
+            translateX(-50%)
+            scaleX(1.04);
+    }
+}
+
+
+/* =========================================================
+   Animations — Light Island
+========================================================= */
+
+.scene.light .island {
+    animation:
+        islandDriftLight
+        12s ease-in-out infinite;
+}
+
+@keyframes islandDriftLight {
+
+    0%,
+    100% {
+        transform:
+            translate3d(0,0,0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate3d(0,-.6px,0)
+            scale(1.005);
+    }
+}
+
+
+/* =========================================================
+   Animations — Reflection
+========================================================= */
+
+@keyframes reflectionPulse {
+
+    0%,
+    100% {
+        opacity: .38;
+
+        transform:
+            translateX(-50%)
+            scaleX(.96)
+            scaleY(.62);
+    }
+
+    50% {
+        opacity: .56;
+
+        transform:
+            translateX(-50%)
+            scaleX(1.02)
+            scaleY(.70);
+    }
+}
+
+@keyframes reflectionPulseLight {
+
+    0%,
+    100% {
+        opacity: .32;
+
+        transform:
+            translateX(-50%)
+            scaleX(.96)
+            scaleY(.48);
+    }
+
+    50% {
+        opacity: .46;
+
+        transform:
+            translateX(-50%)
+            scaleX(1.015)
+            scaleY(.54);
+    }
+}
+
+@keyframes reflectionLine {
+
+    0% {
+        transform:
+            translateX(-50%)
+            scaleX(.94);
+
+        opacity: .28;
+    }
+
+    45% {
+        transform:
+            translateX(-50%)
+            scaleX(1.015);
+
+        opacity: .48;
+    }
+
+    100% {
+        transform:
+            translateX(-50%)
+            scaleX(1.035);
+
+        opacity: .58;
+    }
+}
+
+
+/* =========================================================
+   Animations — Dark Ocean
+========================================================= */
+
+@keyframes oceanWaveFar {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(-3px)
+            scaleX(.90);
+    }
+
+    25% {
+        transform:
+            translateX(-48%)
+            translateY(3px)
+            scaleX(1.02);
+    }
+
+    55% {
+        transform:
+            translateX(-53%)
+            translateY(7px)
+            scaleX(1.10);
+    }
+
+    100% {
+        transform:
+            translateX(-47%)
+            translateY(-4px)
+            scaleX(.91);
+    }
+}
+
+@keyframes oceanWaveMid {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(5px)
+            scaleX(1.08);
+    }
+
+    30% {
+        transform:
+            translateX(-53%)
+            translateY(-5px)
+            scaleX(.91);
+    }
+
+    65% {
+        transform:
+            translateX(-47%)
+            translateY(8px)
+            scaleX(1.07);
+    }
+
+    100% {
+        transform:
+            translateX(-52%)
+            translateY(-3px)
+            scaleX(.94);
+    }
+}
+
+@keyframes oceanWaveNear {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(-5px)
+            scaleX(.91);
+    }
+
+    28% {
+        transform:
+            translateX(-47%)
+            translateY(5px)
+            scaleX(1.05);
+    }
+
+    58% {
+        transform:
+            translateX(-53%)
+            translateY(11px)
+            scaleX(1.10);
+    }
+
+    100% {
+        transform:
+            translateX(-48%)
+            translateY(-7px)
+            scaleX(.93);
+    }
+}
+
+@keyframes oceanSurfaceFar {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(4px)
+            scaleX(.92);
+    }
+
+    35% {
+        transform:
+            translateX(-53%)
+            translateY(-5px)
+            scaleX(1.06);
+    }
+
+    70% {
+        transform:
+            translateX(-47%)
+            translateY(7px)
+            scaleX(1.08);
+    }
+
+    100% {
+        transform:
+            translateX(-51%)
+            translateY(-3px)
+            scaleX(.94);
+    }
+}
+
+@keyframes oceanSurfaceMid {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(-5px)
+            scaleX(1.07);
+    }
+
+    30% {
+        transform:
+            translateX(-47%)
+            translateY(6px)
+            scaleX(.93);
+    }
+
+    65% {
+        transform:
+            translateX(-53%)
+            translateY(11px)
+            scaleX(1.05);
+    }
+
+    100% {
+        transform:
+            translateX(-48%)
+            translateY(-6px)
+            scaleX(.95);
+    }
+}
+
+@keyframes oceanSurfaceNear {
+
+    0% {
+        transform:
+            translateX(-50%)
+            translateY(6px)
+            scaleX(.90);
+    }
+
+    32% {
+        transform:
+            translateX(-53%)
+            translateY(-7px)
+            scaleX(1.06);
+    }
+
+    62% {
+        transform:
+            translateX(-47%)
+            translateY(12px)
+            scaleX(1.10);
+    }
+
+    100% {
+        transform:
+            translateX(-52%)
+            translateY(-5px)
+            scaleX(.92);
+    }
+}
+
+
+/* =========================================================
+   Animations — Light Ocean
+========================================================= */
+
+@keyframes oceanAtmosphere {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-1%,0,0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate3d(1%,-1%,0)
+            scale(1.025);
+    }
+}
+
+@keyframes oceanGlow {
+
+    0%,
+    100% {
+        opacity: .52;
+
+        transform:
+            translateX(-1%);
+    }
+
+    50% {
+        opacity: .76;
+
+        transform:
+            translateX(1%);
+    }
+}
+
+@keyframes waterDrift {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-1.5%,0,0)
+            scaleX(1.02);
+    }
+
+    50% {
+        transform:
+            translate3d(1.5%,-1px,0)
+            scaleX(1.05);
+    }
+}
+
+@keyframes surfaceFar {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-1%,0,0)
+            scaleY(.96);
+    }
+
+    50% {
+        transform:
+            translate3d(1.5%,-1px,0)
+            scaleY(1.04);
+    }
+}
+
+@keyframes surfaceMid {
+
+    0%,
+    100% {
+        transform:
+            translate3d(1.5%,0,0)
+            scaleY(.94);
+    }
+
+    50% {
+        transform:
+            translate3d(-1.8%,2px,0)
+            scaleY(1.06);
+    }
+}
+
+@keyframes surfaceNear {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-2%,0,0)
+            scaleY(.92);
+    }
+
+    50% {
+        transform:
+            translate3d(2.5%,3px,0)
+            scaleY(1.08);
+    }
+}
+
+@keyframes waterGaps {
+
+    0%,
+    100% {
+        transform:
+            translate3d(-1%,0,0)
+            scaleY(.96);
+    }
+
+    50% {
+        transform:
+            translate3d(1.5%,1px,0)
+            scaleY(1.04);
+    }
+}
+
+@keyframes oceanMist {
+
+    0%,
+    100% {
+        transform:
+            translateX(-1%)
+            scaleX(1);
+
+        opacity: .55;
+    }
+
+    50% {
+        transform:
+            translateX(1%)
+            scaleX(1.025);
+
+        opacity: .72;
+    }
+}
+
+@keyframes oceanMistDark {
+
+    0% {
+        opacity: .55;
+
+        transform:
+            translate3d(-10px,0,0)
+            scaleX(.98);
+    }
+
+    100% {
+        opacity: .9;
+
+        transform:
+            translate3d(12px,-2px,0)
+            scaleX(1.025);
+    }
+}
+
+@keyframes waterAtmosphere {
+
+    0% {
+        opacity: .55;
+
+        transform:
+            translate3d(-20px,2px,0)
+            scaleX(.97);
+    }
+
+    35% {
+        opacity: .88;
+
+        transform:
+            translate3d(5px,-2px,0)
+            scaleX(1.015);
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            translate3d(22px,3px,0)
+            scaleX(1.035);
+    }
+
+    100% {
+        opacity: .62;
+
+        transform:
+            translate3d(-8px,-3px,0)
+            scaleX(.985);
+    }
+}
+
+
+/* =========================================================
+   Horizon
+========================================================= */
+
+@keyframes horizonPulse {
+
+    0%,
+    100% {
+        opacity: .68;
+    }
+
+    50% {
+        opacity: .92;
+    }
+}
+
+
+/* =========================================================
+   Status
+========================================================= */
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
         opacity: .25;
-      }
+    }
 
-      50% {
+    50% {
         opacity: .65;
-      }
     }
+}
 
-    /* =========================================================
-       Mobile
-       ========================================================= */
 
-    @media (max-width: 600px) {
+/* =========================================================
+   Mobile
+========================================================= */
 
-      .scene {
+@media (max-width: 600px) {
+
+    .scene {
         min-height: 500px;
-      }
-
-      /*
-       * 円は画面幅に応じて変化。
-       * 見える窓は円の高さの20%。
-       */
-      .island-window {
-        top: calc(37.5vh - clamp(20px, 3.6vw, 36px));
-
-        width: clamp(100px, 18vw, 180px);
-        height: clamp(20px, 3.6vw, 36px);
-      }
-
-      .island {
-        width: clamp(100px, 18vw, 180px);
-        height: clamp(100px, 18vw, 180px);
-      }
-
-      .island-shadow {
-        top: calc(37.5vh + 3px);
-
-        width: clamp(108px, 19.5vw, 195px);
-        height: clamp(48px, 8.7vw, 87px);
-      }
-
-      .island-gap-mist {
-        width: clamp(124px, 23vw, 230px);
-      }
-
-      .brand {
-        bottom: 8vh;
-      }
-
-      .brand-name {
-        font-size: 15px;
-      }
-
-      .brand-status {
-        font-size: 7px;
-      }
     }
 
-    /* =========================================================
-       Reduced motion
-       ========================================================= */
+    .theme-toggle {
 
-    @media (prefers-reduced-motion: reduce) {
+        top: 14px;
+        right: 14px;
 
-      *,
-      *::before,
-      *::after {
+        width: 28px;
+        height: 28px;
+    }
+
+    .brand {
+        bottom: 8vh;
+    }
+
+    .brand-name {
+        font-size: 15px;
+    }
+
+    .brand-status {
+        font-size: 7px;
+    }
+
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-      }
     }
-  </style>
+
+}
+
+</style>
 </head>
+
 
 <body>
 
-  <main class="scene">
+<main class="scene" id="scene">
+
+    <!-- =====================================================
+         Theme Toggle
+    ====================================================== -->
+
+    <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+        aria-label="テーマをライトモードに切り替える"
+        aria-pressed="false"
+    >
+        <span class="theme-icon"></span>
+    </button>
+
+
+    <!-- =====================================================
+         Atmosphere / Stars
+    ====================================================== -->
 
     <div class="atmosphere"></div>
 
-    <!-- =======================================================
-         巨大な円。
-         円のサイズは画面幅に応じて変化し、
-         上側20%だけを表示する。
-         ======================================================= -->
+
+    <!-- =====================================================
+         Island
+    ====================================================== -->
 
     <div class="island-window">
-      <div class="island"></div>
+
+        <div class="island"></div>
+
     </div>
 
-    <!-- 島と水平線の間の薄い霧 -->
+
+    <!-- =====================================================
+         Island / Horizon Gap
+    ====================================================== -->
+
     <div class="island-gap-mist"></div>
 
-    <!-- 海面にゆらぐ島影 -->
-    <div class="island-shadow"></div>
 
-    <!-- 水平線 -->
+    <!-- =====================================================
+         Horizon
+    ====================================================== -->
+
     <div class="horizon"></div>
 
-    <!-- 海 -->
+
+    <!-- =====================================================
+         Ocean
+    ====================================================== -->
+
     <div class="ocean">
 
-      <div class="water"></div>
+        <div class="water-gaps"></div>
 
-      <div class="surface-far"></div>
+        <div class="ocean-mist"></div>
 
-      <div class="surface-mid"></div>
+        <div class="water"></div>
 
-      <div class="surface-near"></div>
+        <div class="surface-far"></div>
 
-      <div class="water-gaps"></div>
+        <div class="surface-mid"></div>
+
+        <div class="surface-near"></div>
 
     </div>
 
-    <!-- 水平線付近の大気 -->
-    <div class="ocean-mist"></div>
 
-    <!-- Brand -->
+    <!-- =====================================================
+         Island Reflection
+    ====================================================== -->
+
+    <div class="island-shadow"></div>
+
+
+    <!-- =====================================================
+         Brand
+    ====================================================== -->
+
     <div class="brand">
 
-      <h1 class="brand-name">
-        esenus
-      </h1>
+        <h1 class="brand-name">
+            esenus
+        </h1>
 
-      <div class="brand-status">
-        <span class="status-dot"></span>
-        awaiting initialization
-      </div>
+        <div class="brand-status">
+
+            <span class="status-dot"></span>
+
+            awaiting initialization
+
+        </div>
 
     </div>
 
-  </main>
+</main>
+
+
+<script>
+
+(function () {
+
+    const scene =
+        document.getElementById("scene");
+
+    const toggle =
+        document.getElementById("themeToggle");
+
+
+    /*
+     * Restore previously selected theme.
+     *
+     * Default:
+     * dark
+     */
+
+    const savedTheme =
+        localStorage.getItem("esenus-theme");
+
+
+    if (savedTheme === "light") {
+
+        scene.classList.add("light");
+
+    }
+
+
+    function updateButton() {
+
+        const isLight =
+            scene.classList.contains("light");
+
+
+        toggle.setAttribute(
+            "aria-pressed",
+            String(isLight)
+        );
+
+
+        toggle.setAttribute(
+            "aria-label",
+            isLight
+                ? "テーマをダークモードに切り替える"
+                : "テーマをライトモードに切り替える"
+        );
+
+    }
+
+
+    toggle.addEventListener(
+        "click",
+        function () {
+
+            const isLight =
+                scene.classList.toggle("light");
+
+
+            localStorage.setItem(
+                "esenus-theme",
+                isLight
+                    ? "light"
+                    : "dark"
+            );
+
+
+            updateButton();
+
+        }
+    );
+
+
+    updateButton();
+
+})();
+
+</script>
 
 </body>
 </html>
