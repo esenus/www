@@ -1,28 +1,24 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="theme-color" content="#05070a">
+<meta name="color-scheme" content="dark light">
 <title>esenus</title>
 
 <style>
-
 /* =========================================================
    Shared Geometry
 ========================================================= */
 
 :root {
     --island-size: clamp(100px, 18vw, 180px);
-    --island-window-height: calc(var(--island-size) * 0.20);
-
-    /* Island bottom ↔ horizon */
+    --island-window-height: calc(var(--island-size) * .20);
     --island-horizon-gap: 4px;
-
-    /* Reflection position */
     --reflection-offset: 1px;
 }
-
 
 /* =========================================================
    Base
@@ -49,28 +45,26 @@ body {
         sans-serif;
 }
 
-
-/* =========================================================
-   Scene
-========================================================= */
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
 
 .scene {
     position: relative;
-
     width: 100%;
+    height: 100vh;
     height: 100svh;
-    min-height: 520px;
-
+    min-height: 500px;
     overflow: hidden;
+    isolation: isolate;
 }
-
 
 /* =========================================================
    DARK THEME
 ========================================================= */
 
 .scene[data-theme="dark"] {
-
     --sky-top: #05070a;
     --sky-mid: #0b1016;
     --sky-bottom: #101820;
@@ -79,27 +73,35 @@ body {
     --sea-mid: #0b1218;
     --sea-bottom: #05090d;
 
-    --text: rgba(220, 230, 235, 0.72);
+    --text: rgba(220,230,235,.72);
 
-    background:
-        linear-gradient(
-            to bottom,
-            var(--sky-top) 0%,
-            var(--sky-mid) 23%,
-            var(--sky-bottom) 42%,
-            var(--sea-top) 42%,
-            var(--sea-mid) 70%,
-            var(--sea-bottom) 100%
-        );
+    --brand-color: rgba(220,230,235,.62);
+    --status-color: rgba(220,230,235,.36);
+
+    --link-color: rgba(220,230,235,.58);
+    --link-hover: rgba(230,239,243,.94);
+    --link-border: rgba(220,230,235,.13);
+    --link-border-hover: rgba(220,230,235,.34);
+    --link-surface: rgba(220,230,235,.025);
+    --link-indicator: rgba(220,230,235,.34);
+    --link-indicator-hover: rgba(220,230,235,.85);
+
+    background: linear-gradient(
+        to bottom,
+        var(--sky-top) 0%,
+        var(--sky-mid) 23%,
+        var(--sky-bottom) 42%,
+        var(--sea-top) 42%,
+        var(--sea-mid) 70%,
+        var(--sea-bottom) 100%
+    );
 }
-
 
 /* =========================================================
    LIGHT THEME
 ========================================================= */
 
 .scene[data-theme="light"] {
-
     --sky-top: #eaf2f5;
     --sky-mid: #e5eef2;
     --sky-bottom: #e0ebef;
@@ -108,700 +110,355 @@ body {
     --sea-mid: #cfe2e9;
     --sea-bottom: #bcd6df;
 
-    --text: rgba(35, 57, 66, 0.48);
+    --text: rgba(35,57,66,.48);
 
-    background:
-        linear-gradient(
-            180deg,
-            #eaf2f5 0%,
-            #e5eef2 27%,
-            #e0ebef 48%,
-            #dce9ee 100%
-        );
+    --brand-color: rgba(35,57,66,.65);
+    --status-color: rgba(35,57,66,.43);
+
+    --link-color: rgba(35,57,66,.62);
+    --link-hover: rgba(27,49,57,.96);
+    --link-border: rgba(35,57,66,.14);
+    --link-border-hover: rgba(35,57,66,.32);
+    --link-surface: rgba(255,255,255,.20);
+    --link-indicator: rgba(35,57,66,.34);
+    --link-indicator-hover: rgba(35,57,66,.78);
+
+    background: linear-gradient(
+        180deg,
+        #eaf2f5 0%,
+        #e5eef2 27%,
+        #e0ebef 48%,
+        #dce9ee 100%
+    );
 }
 
-
 /* =========================================================
-   Atmosphere — Dark
+   Atmosphere
 ========================================================= */
+
+.atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
 
 .scene[data-theme="dark"] .atmosphere {
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-
-    z-index: 2;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 36%,
-            rgba(150, 175, 190, 0.05) 0%,
-            rgba(100, 125, 140, 0.025) 30%,
-            transparent 65%
-        );
+    background: radial-gradient(
+        ellipse at 50% 36%,
+        rgba(150,175,190,.05) 0%,
+        rgba(100,125,140,.025) 30%,
+        transparent 65%
+    );
 }
-
-
-/* =========================================================
-   Atmosphere — Light
-========================================================= */
 
 .scene[data-theme="light"] .atmosphere {
-    position: absolute;
-    inset: 0;
-
     z-index: 1;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 38%,
-            rgba(255,255,255,0.56) 0%,
-            rgba(255,255,255,0.26) 27%,
-            rgba(255,255,255,0) 65%
-        );
-
-    animation:
-        atmosphereBreath 12s ease-in-out infinite;
+    background: radial-gradient(
+        ellipse at 50% 38%,
+        rgba(255,255,255,.56) 0%,
+        rgba(255,255,255,.26) 27%,
+        transparent 65%
+    );
+    animation: atmosphereBreath 12s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   Light Atmosphere Animation
-========================================================= */
-
-@keyframes atmosphereBreath {
-
-    0%,
-    100% {
-        opacity: .72;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: .92;
-        transform: scale(1.025);
-    }
-}
-
-
-/* =========================================================
-   Stars — Dark only
-========================================================= */
 
 .scene[data-theme="dark"] .atmosphere::before {
     content: "";
-
     position: absolute;
     inset: 0;
-
     background:
-        radial-gradient(
-            circle at 11% 18%,
-            rgba(220, 230, 235, 0.38) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 19% 31%,
-            rgba(220, 230, 235, 0.22) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 27% 13%,
-            rgba(220, 230, 235, 0.28) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 34% 25%,
-            rgba(220, 230, 235, 0.18) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 42% 9%,
-            rgba(220, 230, 235, 0.30) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 51% 20%,
-            rgba(220, 230, 235, 0.20) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 59% 12%,
-            rgba(220, 230, 235, 0.30) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 67% 27%,
-            rgba(220, 230, 235, 0.20) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 74% 15%,
-            rgba(220, 230, 235, 0.32) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 82% 24%,
-            rgba(220, 230, 235, 0.20) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 91% 11%,
-            rgba(220, 230, 235, 0.28) 0 0.7px,
-            transparent 1.3px
-        ),
-        radial-gradient(
-            circle at 87% 34%,
-            rgba(220, 230, 235, 0.16) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 7% 37%,
-            rgba(220, 230, 235, 0.18) 0 0.6px,
-            transparent 1.2px
-        ),
-        radial-gradient(
-            circle at 31% 36%,
-            rgba(220, 230, 235, 0.15) 0 0.6px,
-            transparent 1.2px
-        );
-
-    opacity: 0.72;
-
-    animation:
-        starLight 11s ease-in-out infinite alternate;
+        radial-gradient(circle at 11% 18%, rgba(220,230,235,.38) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 19% 31%, rgba(220,230,235,.22) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 27% 13%, rgba(220,230,235,.28) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 34% 25%, rgba(220,230,235,.18) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 42% 9%, rgba(220,230,235,.30) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 51% 20%, rgba(220,230,235,.20) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 59% 12%, rgba(220,230,235,.30) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 67% 27%, rgba(220,230,235,.20) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 74% 15%, rgba(220,230,235,.32) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 82% 24%, rgba(220,230,235,.20) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 91% 11%, rgba(220,230,235,.28) 0 .7px, transparent 1.3px),
+        radial-gradient(circle at 87% 34%, rgba(220,230,235,.16) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 7% 37%, rgba(220,230,235,.18) 0 .6px, transparent 1.2px),
+        radial-gradient(circle at 31% 36%, rgba(220,230,235,.15) 0 .6px, transparent 1.2px);
+    opacity: .72;
+    animation: starLight 11s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .atmosphere::after {
     content: "";
-
     position: absolute;
-
-    left: 0;
-    right: 0;
-
-    top: 30%;
-    height: 20%;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 50%,
-            rgba(190, 210, 220, 0.055) 0%,
-            rgba(150, 175, 190, 0.025) 38%,
-            transparent 75%
-        );
-
+    inset: 30% 0 50%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(190,210,220,.055),
+        rgba(150,175,190,.025) 38%,
+        transparent 75%
+    );
     filter: blur(14px);
-
-    animation:
-        skyLight 17s ease-in-out infinite alternate;
+    animation: skyLight 17s ease-in-out infinite alternate;
 }
 
-
 /* =========================================================
-   Island Window — Shared
+   Island
 ========================================================= */
 
 .island-window {
     position: absolute;
-
     left: 50%;
-
-    top:
-        calc(
-            37.5vh
-            - var(--island-window-height)
-            - var(--island-horizon-gap)
-        );
-
+    top: calc(37.5vh - var(--island-window-height) - var(--island-horizon-gap));
     width: var(--island-size);
     height: var(--island-window-height);
-
     transform: translateX(-50%);
-
     overflow: hidden;
-
     z-index: 30;
-
     pointer-events: none;
 }
 
-
-/* =========================================================
-   Island — Dark
-========================================================= */
-
-.scene[data-theme="dark"] .island {
-
+.island {
     position: absolute;
-
-    left: 0;
-    top: 0;
-
+    inset: 0 auto auto 0;
     width: var(--island-size);
     height: var(--island-size);
-
     border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle at 50% 42%,
-            rgba(105, 119, 126, 0.30) 0%,
-            rgba(76, 88, 95, 0.27) 28%,
-            rgba(43, 52, 58, 0.24) 57%,
-            rgba(18, 24, 28, 0.16) 76%,
-            rgba(10, 14, 17, 0) 100%
-        );
-
-    filter: blur(1.8px);
-
-    transform-origin: center center;
-
-    animation:
-        islandDriftDark 9s ease-in-out infinite alternate;
+    transform-origin: center;
 }
 
-
-/* =========================================================
-   Island — Light
-========================================================= */
+.scene[data-theme="dark"] .island {
+    background: radial-gradient(
+        circle at 50% 42%,
+        rgba(105,119,126,.30) 0%,
+        rgba(76,88,95,.27) 28%,
+        rgba(43,52,58,.24) 57%,
+        rgba(18,24,28,.16) 76%,
+        transparent 100%
+    );
+    filter: blur(1.8px);
+    animation: islandDriftDark 9s ease-in-out infinite alternate;
+}
 
 .scene[data-theme="light"] .island {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: var(--island-size);
-    height: var(--island-size);
-
-    border-radius: 50%;
-
-    /*
-     * Darker grayではなく、
-     * かなり薄い blue-green。
-     *
-     * 上端よりも下端へ向かって透明になる。
-     */
     background:
         radial-gradient(
             ellipse at 50% 32%,
-            rgba(62, 116, 119, 0.16) 0%,
-            rgba(57, 108, 112, 0.125) 24%,
-            rgba(52, 101, 106, 0.09) 45%,
-            rgba(49, 96, 101, 0.055) 63%,
-            rgba(49, 96, 101, 0.018) 76%,
-            rgba(49, 96, 101, 0) 88%
+            rgba(62,116,119,.16) 0%,
+            rgba(57,108,112,.125) 24%,
+            rgba(52,101,106,.09) 45%,
+            rgba(49,96,101,.055) 63%,
+            rgba(49,96,101,.018) 76%,
+            transparent 88%
         ),
         radial-gradient(
             ellipse at 50% 72%,
-            rgba(48, 94, 99, 0.055) 0%,
-            rgba(48, 94, 99, 0.025) 42%,
-            rgba(48, 94, 99, 0) 72%
+            rgba(48,94,99,.055) 0%,
+            rgba(48,94,99,.025) 42%,
+            transparent 72%
         );
-
-    /*
-     * 島の輪郭を残しつつ、
-     * 下端だけ少し空気に溶かす。
-     */
-    filter:
-        blur(1.05px)
-        saturate(.78);
-
+    filter: blur(1.05px) saturate(.78);
     opacity: .82;
-
-    transform-origin: center center;
-
-    animation:
-        islandDriftLight 14s ease-in-out infinite;
+    animation: islandDriftLight 14s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   Island Upper Haze — Light
-========================================================= */
 
 .scene[data-theme="light"] .island::before {
     content: "";
-
     position: absolute;
-
     left: 3%;
     right: 3%;
     top: 1%;
-
     height: 42%;
-
-    border-radius:
-        50%
-        50%
-        35%
-        35% /
-        90%
-        90%
-        35%
-        35%;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 100%,
-            rgba(48, 98, 103, .075) 0%,
-            rgba(52, 101, 106, .05) 42%,
-            rgba(70, 115, 119, .018) 68%,
-            rgba(105, 137, 141, 0) 100%
-        );
-
+    border-radius: 50% 50% 35% 35% / 90% 90% 35% 35%;
+    background: radial-gradient(
+        ellipse at 50% 100%,
+        rgba(48,98,103,.075),
+        rgba(52,101,106,.05) 42%,
+        rgba(70,115,119,.018) 68%,
+        transparent 100%
+    );
     filter: blur(1px);
-
     opacity: .78;
 }
 
-
-/* =========================================================
-   Island Lower Haze — Light
-========================================================= */
-
 .scene[data-theme="light"] .island::after {
     content: "";
-
     position: absolute;
-
     left: -10%;
     right: -10%;
     bottom: 5px;
-
     height: 36%;
-
     border-radius: 50%;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 28%,
-            rgba(220, 239, 241, .10) 0%,
-            rgba(220, 239, 241, .045) 42%,
-            rgba(220, 239, 241, 0) 82%
-        );
-
+    background: radial-gradient(
+        ellipse at 50% 28%,
+        rgba(220,239,241,.10),
+        rgba(220,239,241,.045) 42%,
+        transparent 82%
+    );
     filter: blur(6px);
-
     opacity: .72;
 }
 
-
 /* =========================================================
-   Gap Mist — Dark
+   Island / Horizon Gap
 ========================================================= */
+
+.island-gap-mist {
+    position: absolute;
+    left: 50%;
+    top: calc(37.5vh - var(--island-horizon-gap));
+    transform: translateX(-50%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 32;
+}
 
 .scene[data-theme="dark"] .island-gap-mist {
-
-    position: absolute;
-
-    left: 50%;
-    top: calc(37.5vh - var(--island-horizon-gap));
-
     width: calc(var(--island-size) * 1.28);
     height: 9px;
-
-    transform: translateX(-50%);
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(190, 205, 210, 0.10) 0%,
-            rgba(165, 185, 195, 0.045) 38%,
-            transparent 75%
-        );
-
+    background: radial-gradient(
+        ellipse at center,
+        rgba(190,205,210,.10),
+        rgba(165,185,195,.045) 38%,
+        transparent 75%
+    );
     filter: blur(4px);
-
-    z-index: 32;
-
-    animation:
-        gapMistDark 9s ease-in-out infinite alternate;
+    animation: gapMistDark 9s ease-in-out infinite alternate;
 }
-
-
-/* =========================================================
-   Gap Mist — Light
-========================================================= */
 
 .scene[data-theme="light"] .island-gap-mist {
-
-    position: absolute;
-
-    left: 50%;
-    top: calc(37.5vh - var(--island-horizon-gap));
-
-    /*
-     * 4pxという実寸の隙間を
-     * 光の帯で大きく見せない。
-     */
     width: calc(var(--island-size) * 1.02);
     height: 6px;
-
-    transform: translateX(-50%);
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(225, 239, 241, .055) 0%,
-            rgba(215, 232, 235, .018) 42%,
-            rgba(215, 232, 235, 0) 76%
-        );
-
+    background: radial-gradient(
+        ellipse at center,
+        rgba(225,239,241,.055),
+        rgba(215,232,235,.018) 42%,
+        transparent 76%
+    );
     filter: blur(3px);
-
     opacity: .42;
-
-    z-index: 32;
-
-    animation:
-        gapMistLight 11s ease-in-out infinite alternate;
+    animation: gapMistLight 11s ease-in-out infinite alternate;
 }
 
-
 /* =========================================================
-   Horizon — Dark
+   Horizon
 ========================================================= */
+
+.horizon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 37.5vh;
+    height: 1px;
+    pointer-events: none;
+    z-index: 34;
+}
 
 .scene[data-theme="dark"] .horizon {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    top: 37.5vh;
-
-    height: 1px;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(185, 200, 210, 0.06) 18%,
-            rgba(205, 215, 220, 0.11) 50%,
-            rgba(185, 200, 210, 0.06) 82%,
-            transparent 100%
-        );
-
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(185,200,210,.06) 18%,
+        rgba(205,215,220,.11) 50%,
+        rgba(185,200,210,.06) 82%,
+        transparent
+    );
     filter: blur(.25px);
-
-    z-index: 34;
-
-    pointer-events: none;
 }
-
-
-/* =========================================================
-   Horizon — Light
-========================================================= */
 
 .scene[data-theme="light"] .horizon {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    top: 37.5vh;
-
-    height: 1px;
-
-    /*
-     * Darkと同じ「線」として存在させる。
-     * ただしLightでは強くしすぎない。
-     */
-    background:
-        linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(96, 128, 136, .035) 18%,
-            rgba(84, 118, 126, .09) 50%,
-            rgba(96, 128, 136, .035) 82%,
-            transparent 100%
-        );
-
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(96,128,136,.035) 18%,
+        rgba(84,118,126,.09) 50%,
+        rgba(96,128,136,.035) 82%,
+        transparent
+    );
     filter: blur(.3px);
-
-    z-index: 34;
-
-    pointer-events: none;
 }
 
-
 /* =========================================================
-   Ocean — Dark
+   Ocean
 ========================================================= */
 
-.scene[data-theme="dark"] .ocean {
-
+.ocean {
     position: absolute;
-
     left: 0;
     right: 0;
-
     top: 37.5vh;
     bottom: 0;
-
     overflow: hidden;
-
     z-index: 5;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(25, 35, 42, 0.20) 0%,
-            rgba(13, 21, 27, 0.32) 25%,
-            rgba(8, 14, 19, 0.65) 70%,
-            rgba(3, 7, 10, 0.95) 100%
-        );
 }
 
-
-/* =========================================================
-   Ocean — Light
-========================================================= */
+.scene[data-theme="dark"] .ocean {
+    background: linear-gradient(
+        to bottom,
+        rgba(25,35,42,.20),
+        rgba(13,21,27,.32) 25%,
+        rgba(8,14,19,.65) 70%,
+        rgba(3,7,10,.95)
+    );
+}
 
 .scene[data-theme="light"] .ocean {
-
-    position: absolute;
-
-    inset: 37.5vh 0 0;
-
-    z-index: 5;
-
-    overflow: hidden;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(170,201,215,.08) 0%,
-            rgba(158,193,209,.18) 20%,
-            rgba(139,184,201,.30) 52%,
-            rgba(120,172,192,.44) 100%
-        );
+    background: linear-gradient(
+        180deg,
+        rgba(170,201,215,.08),
+        rgba(158,193,209,.18) 20%,
+        rgba(139,184,201,.30) 52%,
+        rgba(120,172,192,.44)
+    );
 }
-
 
 /* =========================================================
    Dark Ocean Waves
 ========================================================= */
 
-.scene[data-theme="dark"] .ocean::before {
+.scene[data-theme="dark"] .ocean::before,
+.scene[data-theme="dark"] .ocean::after {
     content: "";
-
     position: absolute;
-
     left: 50%;
-    top: 8%;
+    border-top: 1px solid rgba(180,200,210,.09);
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+}
 
+.scene[data-theme="dark"] .ocean::before {
+    top: 8%;
     width: 360px;
     height: 52px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(.94);
-
-    border-top: 1px solid rgba(180, 200, 210, .09);
-
-    border-radius: 50%;
-
     filter: blur(1px);
-
-    will-change: transform;
-
-    animation:
-        oceanWaveFar 8s ease-in-out infinite alternate;
+    animation: oceanWaveFar 8s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .ocean::after {
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
     top: 17%;
-
     width: 520px;
     height: 72px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(1);
-
-    border-top: 1px solid rgba(170, 190, 200, .075);
-
-    border-radius: 50%;
-
+    border-top-color: rgba(170,190,200,.075);
     filter: blur(1.2px);
-
-    will-change: transform;
-
-    animation:
-        oceanWaveMid 10s ease-in-out infinite alternate;
+    animation: oceanWaveMid 10s ease-in-out infinite alternate;
 }
-
 
 /* =========================================================
    Light Ocean Waves
 ========================================================= */
 
 .scene[data-theme="light"] .ocean::before {
-
     content: "";
-
     position: absolute;
-
     inset: -8% -15% -5%;
-
     z-index: 6;
-
     pointer-events: none;
-
     background:
-
-        radial-gradient(
-            ellipse 90px 4px at 10% 12%,
-            rgba(255,255,255,.075) 0%,
-            rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-            ellipse 130px 4px at 45% 20%,
-            rgba(255,255,255,.065) 0%,
-            rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-            ellipse 110px 4px at 82% 15%,
-            rgba(255,255,255,.06) 0%,
-            rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-            ellipse 150px 5px at 25% 32%,
-            rgba(255,255,255,.055) 0%,
-            rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-            ellipse 120px 4px at 68% 38%,
-            rgba(255,255,255,.05) 0%,
-            rgba(255,255,255,0) 75%
-        ),
-
-        radial-gradient(
-            ellipse 170px 5px at 92% 48%,
-            rgba(255,255,255,.045) 0%,
-            rgba(255,255,255,0) 75%
-        );
-
+        radial-gradient(ellipse 90px 4px at 10% 12%, rgba(255,255,255,.075), transparent 75%),
+        radial-gradient(ellipse 130px 4px at 45% 20%, rgba(255,255,255,.065), transparent 75%),
+        radial-gradient(ellipse 110px 4px at 82% 15%, rgba(255,255,255,.06), transparent 75%),
+        radial-gradient(ellipse 150px 5px at 25% 32%, rgba(255,255,255,.055), transparent 75%),
+        radial-gradient(ellipse 120px 4px at 68% 38%, rgba(255,255,255,.05), transparent 75%),
+        radial-gradient(ellipse 170px 5px at 92% 48%, rgba(255,255,255,.045), transparent 75%);
     background-size:
         420px 150px,
         510px 170px,
@@ -809,7 +466,6 @@ body {
         560px 190px,
         500px 180px,
         620px 210px;
-
     background-position:
         0 0,
         0 25px,
@@ -817,71 +473,24 @@ body {
         0 110px,
         0 150px,
         0 200px;
-
     opacity: .65;
-
-    will-change: transform;
-
-    animation:
-        distantWaves 13s ease-in-out infinite;
+    animation: distantWaves 13s ease-in-out infinite;
 }
 
 .scene[data-theme="light"] .ocean::after {
-
     content: "";
-
     position: absolute;
-
     inset: 5% -18% -8%;
-
     z-index: 7;
-
     pointer-events: none;
-
     background:
-
-        radial-gradient(
-            ellipse 180px 7px at 8% 18%,
-            rgba(255,255,255,.095) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 230px 7px at 38% 30%,
-            rgba(255,255,255,.075) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 200px 7px at 70% 24%,
-            rgba(255,255,255,.085) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 260px 8px at 94% 42%,
-            rgba(255,255,255,.065) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 210px 7px at 20% 58%,
-            rgba(255,255,255,.06) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 280px 8px at 58% 68%,
-            rgba(255,255,255,.055) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-
-        radial-gradient(
-            ellipse 230px 7px at 88% 82%,
-            rgba(255,255,255,.05) 0%,
-            rgba(255,255,255,0) 72%
-        );
-
+        radial-gradient(ellipse 180px 7px at 8% 18%, rgba(255,255,255,.095), transparent 72%),
+        radial-gradient(ellipse 230px 7px at 38% 30%, rgba(255,255,255,.075), transparent 72%),
+        radial-gradient(ellipse 200px 7px at 70% 24%, rgba(255,255,255,.085), transparent 72%),
+        radial-gradient(ellipse 260px 8px at 94% 42%, rgba(255,255,255,.065), transparent 72%),
+        radial-gradient(ellipse 210px 7px at 20% 58%, rgba(255,255,255,.06), transparent 72%),
+        radial-gradient(ellipse 280px 8px at 58% 68%, rgba(255,255,255,.055), transparent 72%),
+        radial-gradient(ellipse 230px 7px at 88% 82%, rgba(255,255,255,.05), transparent 72%);
     background-size:
         520px 190px,
         650px 230px,
@@ -890,7 +499,6 @@ body {
         560px 220px,
         720px 270px,
         620px 250px;
-
     background-position:
         0 0,
         80px 20px,
@@ -899,15 +507,9 @@ body {
         -80px 160px,
         60px 220px,
         -100px 280px;
-
     opacity: .72;
-
-    will-change: transform;
-
-    animation:
-        nearWaves 8.5s ease-in-out infinite;
+    animation: nearWaves 8.5s ease-in-out infinite;
 }
-
 
 /* =========================================================
    Water Layers — Dark
@@ -917,102 +519,48 @@ body {
 .scene[data-theme="dark"] .surface-far,
 .scene[data-theme="dark"] .surface-mid,
 .scene[data-theme="dark"] .surface-near {
-
     position: absolute;
-
+    left: 50%;
+    border-top: 1px solid rgba(170,190,200,.065);
+    border-radius: 50%;
     pointer-events: none;
-
     will-change: transform;
 }
 
 .scene[data-theme="dark"] .water {
-    left: 50%;
     top: 31%;
-
     width: 700px;
     height: 90px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(.96);
-
-    border-top: 1px solid rgba(170, 190, 200, .065);
-
-    border-radius: 50%;
-
     filter: blur(1.5px);
-
-    animation:
-        oceanWaveNear 12s ease-in-out infinite alternate;
+    animation: oceanWaveNear 12s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .surface-far {
-    left: 50%;
     top: 43%;
-
     width: 860px;
     height: 100px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(.96);
-
-    border-top: 1px solid rgba(165, 185, 195, .055);
-
-    border-radius: 50%;
-
+    border-top-color: rgba(165,185,195,.055);
     filter: blur(1.5px);
-
-    animation:
-        oceanSurfaceFar 14s ease-in-out infinite alternate;
+    animation: oceanSurfaceFar 14s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .surface-mid {
-    left: 50%;
     top: 58%;
-
     width: 1050px;
     height: 120px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(1);
-
-    border-top: 1px solid rgba(155, 175, 185, .048);
-
-    border-radius: 50%;
-
+    border-top-color: rgba(155,175,185,.048);
     filter: blur(2px);
-
-    animation:
-        oceanSurfaceMid 16s ease-in-out infinite alternate;
+    animation: oceanSurfaceMid 16s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .surface-near {
-    left: 50%;
     top: 75%;
-
     width: 1300px;
     height: 150px;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scaleX(.95);
-
-    border-top: 1px solid rgba(145, 165, 175, .04);
-
-    border-radius: 50%;
-
+    border-top-color: rgba(145,165,175,.04);
     filter: blur(2px);
-
-    animation:
-        oceanSurfaceNear 18s ease-in-out infinite alternate;
+    animation: oceanSurfaceNear 18s ease-in-out infinite alternate;
 }
-
 
 /* =========================================================
    Water Layers — Light
@@ -1022,519 +570,296 @@ body {
 .scene[data-theme="light"] .surface-far,
 .scene[data-theme="light"] .surface-mid,
 .scene[data-theme="light"] .surface-near {
-
     position: absolute;
-
     left: -12%;
     width: 124%;
-
     pointer-events: none;
-
     will-change: transform;
+    z-index: 5;
 }
 
 .scene[data-theme="light"] .water {
     top: 2%;
     height: 45%;
-
-    z-index: 5;
-
     background:
-        radial-gradient(
-            ellipse 42% 8% at 18% 30%,
-            rgba(255,255,255,.18) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-            ellipse 38% 7% at 70% 48%,
-            rgba(255,255,255,.13) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-            ellipse 48% 8% at 42% 74%,
-            rgba(255,255,255,.10) 0%,
-            rgba(255,255,255,0) 72%
-        );
-
-    animation:
-        waterDrift 17s ease-in-out infinite;
+        radial-gradient(ellipse 42% 8% at 18% 30%, rgba(255,255,255,.18), transparent 72%),
+        radial-gradient(ellipse 38% 7% at 70% 48%, rgba(255,255,255,.13), transparent 72%),
+        radial-gradient(ellipse 48% 8% at 42% 74%, rgba(255,255,255,.10), transparent 72%);
+    animation: waterDrift 17s ease-in-out infinite;
 }
 
 .scene[data-theme="light"] .surface-far {
     top: 7%;
     height: 34%;
-
-    z-index: 5;
-
     background:
-        radial-gradient(
-            ellipse 34% 10% at 22% 35%,
-            rgba(255,255,255,.13) 0%,
-            rgba(255,255,255,0) 70%
-        ),
-        radial-gradient(
-            ellipse 30% 8% at 77% 65%,
-            rgba(255,255,255,.10) 0%,
-            rgba(255,255,255,0) 72%
-        );
-
-    animation:
-        surfaceFar 21s ease-in-out infinite;
+        radial-gradient(ellipse 34% 10% at 22% 35%, rgba(255,255,255,.13), transparent 70%),
+        radial-gradient(ellipse 30% 8% at 77% 65%, rgba(255,255,255,.10), transparent 72%);
+    animation: surfaceFar 21s ease-in-out infinite;
 }
 
 .scene[data-theme="light"] .surface-mid {
     top: 20%;
     height: 38%;
-
-    z-index: 5;
-
     background:
-        radial-gradient(
-            ellipse 46% 9% at 8% 38%,
-            rgba(255,255,255,.13) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-            ellipse 40% 8% at 57% 28%,
-            rgba(255,255,255,.10) 0%,
-            rgba(255,255,255,0) 72%
-        ),
-        radial-gradient(
-            ellipse 44% 9% at 91% 67%,
-            rgba(255,255,255,.11) 0%,
-            rgba(255,255,255,0) 72%
-        );
-
-    animation:
-        surfaceMid 13s ease-in-out infinite;
+        radial-gradient(ellipse 46% 9% at 8% 38%, rgba(255,255,255,.13), transparent 72%),
+        radial-gradient(ellipse 40% 8% at 57% 28%, rgba(255,255,255,.10), transparent 72%),
+        radial-gradient(ellipse 44% 9% at 91% 67%, rgba(255,255,255,.11), transparent 72%);
+    animation: surfaceMid 13s ease-in-out infinite;
 }
 
 .scene[data-theme="light"] .surface-near {
     top: 43%;
     height: 50%;
-
-    z-index: 5;
-
     background:
-        radial-gradient(
-            ellipse 52% 11% at 24% 36%,
-            rgba(255,255,255,.11) 0%,
-            rgba(255,255,255,0) 70%
-        ),
-        radial-gradient(
-            ellipse 46% 10% at 72% 58%,
-            rgba(255,255,255,.09) 0%,
-            rgba(255,255,255,0) 72%
-        );
-
-    animation:
-        surfaceNear 16s ease-in-out infinite;
+        radial-gradient(ellipse 52% 11% at 24% 36%, rgba(255,255,255,.11), transparent 70%),
+        radial-gradient(ellipse 46% 10% at 72% 58%, rgba(255,255,255,.09), transparent 72%);
+    animation: surfaceNear 16s ease-in-out infinite;
 }
 
-
 /* =========================================================
-   Water Gaps — Dark
+   Water Gaps
 ========================================================= */
+
+.water-gaps {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
 
 .scene[data-theme="dark"] .water-gaps {
-
-    position: absolute;
-    inset: 0;
-
     background:
-        radial-gradient(
-            ellipse at 30% 27%,
-            rgba(190, 205, 210, .045) 0%,
-            transparent 38%
-        ),
-        radial-gradient(
-            ellipse at 72% 41%,
-            rgba(185, 200, 210, .04) 0%,
-            transparent 40%
-        ),
-        radial-gradient(
-            ellipse at 42% 67%,
-            rgba(170, 190, 200, .035) 0%,
-            transparent 45%
-        );
-
+        radial-gradient(ellipse at 30% 27%, rgba(190,205,210,.045), transparent 38%),
+        radial-gradient(ellipse at 72% 41%, rgba(185,200,210,.04), transparent 40%),
+        radial-gradient(ellipse at 42% 67%, rgba(170,190,200,.035), transparent 45%);
     opacity: .88;
-
-    animation:
-        waterAtmosphere 13s ease-in-out infinite alternate;
+    animation: waterAtmosphere 13s ease-in-out infinite alternate;
 }
-
-
-/* =========================================================
-   Water Gaps — Light
-========================================================= */
 
 .scene[data-theme="light"] .water-gaps {
-
-    position: absolute;
-    inset: 0;
-
     z-index: 8;
-
-    pointer-events: none;
-
     background:
-        radial-gradient(
-            ellipse 22% 4% at 18% 18%,
-            rgba(255,255,255,.08),
-            transparent 72%
-        ),
-        radial-gradient(
-            ellipse 28% 5% at 76% 30%,
-            rgba(255,255,255,.07),
-            transparent 72%
-        ),
-        radial-gradient(
-            ellipse 20% 4% at 42% 55%,
-            rgba(255,255,255,.06),
-            transparent 72%
-        ),
-        radial-gradient(
-            ellipse 34% 6% at 83% 76%,
-            rgba(255,255,255,.05),
-            transparent 72%
-        );
-
-    animation:
-        gapsDrift 14s ease-in-out infinite;
+        radial-gradient(ellipse 22% 4% at 18% 18%, rgba(255,255,255,.08), transparent 72%),
+        radial-gradient(ellipse 28% 5% at 76% 30%, rgba(255,255,255,.07), transparent 72%),
+        radial-gradient(ellipse 20% 4% at 42% 55%, rgba(255,255,255,.06), transparent 72%),
+        radial-gradient(ellipse 34% 6% at 83% 76%, rgba(255,255,255,.05), transparent 72%);
+    animation: gapsDrift 14s ease-in-out infinite;
 }
 
-
 /* =========================================================
-   Island Reflection — Dark
+   Island Reflection
 ========================================================= */
 
-.scene[data-theme="dark"] .island-shadow {
-
+.island-shadow {
     position: absolute;
-
     left: 50%;
     top: calc(37.5vh + var(--reflection-offset));
-
-    /*
-     * 元の比率を維持。
-     * ただし横方向は少し縮めて
-     * 「真下に落ちている」感じを優先。
-     */
-    width: calc(var(--island-size) * .78);
-
-    aspect-ratio: 108 / 48;
-    height: auto;
-
     transform: translateX(-50%);
-
     border-radius: 50%;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(165, 185, 195, .075) 0%,
-            rgba(135, 155, 165, .045) 25%,
-            rgba(100, 120, 130, .022) 50%,
-            rgba(70, 90, 100, .008) 70%,
-            transparent 100%
-        );
-
-    filter: blur(4px);
-
     z-index: 31;
+    pointer-events: none;
+}
 
-    animation:
-        reflectionPulseDark 5.5s ease-in-out infinite alternate;
+.scene[data-theme="dark"] .island-shadow {
+    width: calc(var(--island-size) * .78);
+    aspect-ratio: 108 / 48;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(165,185,195,.075),
+        rgba(135,155,165,.045) 25%,
+        rgba(100,120,130,.022) 50%,
+        rgba(70,90,100,.008) 70%,
+        transparent
+    );
+    filter: blur(4px);
+    animation: reflectionPulseDark 5.5s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="dark"] .island-shadow::before {
-
     content: "";
-
     position: absolute;
-
     left: 50%;
     top: 1px;
-
     width: calc(var(--island-size) * .66);
-
     aspect-ratio: 92 / 19;
-    height: auto;
-
     transform: translateX(-50%);
-
-    border-top: 1px solid rgba(190, 205, 210, .055);
-    border-left: 1px solid rgba(180, 195, 205, .014);
-    border-right: 1px solid rgba(180, 195, 205, .014);
-
+    border-top: 1px solid rgba(190,205,210,.055);
+    border-left: 1px solid rgba(180,195,205,.014);
+    border-right: 1px solid rgba(180,195,205,.014);
     border-radius: 50%;
-
     filter: blur(.6px);
-
-    animation:
-        reflectionLineDark 6.5s ease-in-out infinite alternate;
+    animation: reflectionLineDark 6.5s ease-in-out infinite alternate;
 }
 
-
-/* =========================================================
-   Island Reflection — Light
-========================================================= */
-
 .scene[data-theme="light"] .island-shadow {
-
-    position: absolute;
-
-    left: 50%;
-
-    top:
-        calc(
-            37.5vh + var(--reflection-offset)
-        );
-
-    /*
-     * 元の108:48を維持しながら、
-     * 島の真下に小さく落とす。
-     */
     width: calc(var(--island-size) * .72);
-
     aspect-ratio: 108 / 48;
-    height: auto;
-
-    transform: translateX(-50%);
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            ellipse at center top,
-            rgba(48, 101, 106, .075) 0%,
-            rgba(55, 108, 112, .045) 25%,
-            rgba(67, 116, 120, .018) 50%,
-            rgba(80, 125, 129, 0) 75%
-        );
-
+    background: radial-gradient(
+        ellipse at center top,
+        rgba(48,101,106,.075),
+        rgba(55,108,112,.045) 25%,
+        rgba(67,116,120,.018) 50%,
+        transparent 75%
+    );
     filter: blur(4px);
-
     opacity: .72;
-
-    z-index: 31;
-
-    animation:
-        reflectionPulseLight 7s ease-in-out infinite alternate;
+    animation: reflectionPulseLight 7s ease-in-out infinite alternate;
 }
 
 .scene[data-theme="light"] .island-shadow::before {
-
     content: "";
-
     position: absolute;
-
     left: 50%;
     top: 1px;
-
     width: calc(var(--island-size) * .58);
-
     aspect-ratio: 92 / 19;
-    height: auto;
-
     transform: translateX(-50%);
-
-    border-top: 1px solid rgba(72, 119, 124, .045);
-    border-left: 1px solid rgba(72, 119, 124, .012);
-    border-right: 1px solid rgba(72, 119, 124, .012);
-
+    border-top: 1px solid rgba(72,119,124,.045);
+    border-left: 1px solid rgba(72,119,124,.012);
+    border-right: 1px solid rgba(72,119,124,.012);
     border-radius: 50%;
-
     filter: blur(.65px);
-
-    animation:
-        reflectionLineLight 7s ease-in-out infinite alternate;
+    animation: reflectionLineLight 7s ease-in-out infinite alternate;
 }
 
-
 /* =========================================================
-   Ocean Mist — Dark
+   Ocean Mist
 ========================================================= */
 
-.scene[data-theme="dark"] .ocean-mist {
-
+.ocean-mist {
     position: absolute;
-
     left: 0;
     right: 0;
-
     top: 0;
-
-    height: 35%;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(175, 195, 205, .045),
-            rgba(150, 175, 185, .018) 40%,
-            transparent 100%
-        );
-
-    filter: blur(7px);
-
-    z-index: 20;
-
-    animation:
-        oceanMist 15s ease-in-out infinite alternate;
+    pointer-events: none;
 }
 
-
-/* =========================================================
-   Ocean Mist — Light
-========================================================= */
+.scene[data-theme="dark"] .ocean-mist {
+    height: 35%;
+    background: linear-gradient(
+        to bottom,
+        rgba(175,195,205,.045),
+        rgba(150,175,185,.018) 40%,
+        transparent
+    );
+    filter: blur(7px);
+    z-index: 20;
+    animation: oceanMist 15s ease-in-out infinite alternate;
+}
 
 .scene[data-theme="light"] .ocean-mist {
-
-    position: absolute;
-
     inset: 36vh 0 auto;
-
     height: 12vh;
-
     z-index: 12;
-
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(239,246,248,.18),
-            rgba(239,246,248,0)
-        );
-
+    background: linear-gradient(
+        180deg,
+        rgba(239,246,248,.18),
+        transparent
+    );
     filter: blur(7px);
-
     opacity: .48;
 }
 
-
 /* =========================================================
-   Brand — Dark
-========================================================= */
-
-.scene[data-theme="dark"] .brand-name {
-    color: rgba(220, 230, 235, .48);
-}
-
-.scene[data-theme="dark"] .brand-status {
-    color: rgba(220, 230, 235, .27);
-}
-
-.scene[data-theme="dark"] .status-dot {
-    background: rgba(220, 230, 235, .25);
-}
-
-
-/* =========================================================
-   Brand — Light
-========================================================= */
-
-.scene[data-theme="light"] .brand-name {
-    color: rgba(35, 57, 66, .48);
-}
-
-.scene[data-theme="light"] .brand-status {
-    color: rgba(35, 57, 66, .27);
-}
-
-.scene[data-theme="light"] .status-dot {
-    background: rgba(35, 57, 66, .25);
-}
-
-
-/* =========================================================
-   Brand — Shared
+   Brand Area
 ========================================================= */
 
 .brand {
     position: absolute;
-
     left: 50%;
-    bottom: 8.5vh;
-
+    bottom: 5.5vh;
     z-index: 50;
-
     transform: translateX(-50%);
 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: max-content;
+    max-width: calc(100% - 32px);
+
     text-align: center;
-
-    white-space: nowrap;
-
     user-select: none;
 }
 
+/* Brand name */
+
 .brand-name {
     margin: 0;
-
-    font-size: clamp(15px, 1.25vw, 19px);
+    font-size: clamp(18px, 1.5vw, 21px);
     font-weight: 400;
-
+    line-height: 1.4;
     letter-spacing: .24em;
     text-indent: .24em;
+    color: var(--brand-color);
 }
 
-.brand-status {
-    margin-top: 9px;
+/* Status */
 
+.brand-status {
+    margin-top: 7px;
     font-family:
         "SFMono-Regular",
         "Roboto Mono",
         "Menlo",
         monospace;
-
-    font-size: 7px;
-    line-height: 1;
-
-    letter-spacing: .20em;
-    text-indent: .20em;
-
-    text-transform: uppercase;
+    font-size: 10px;
+    line-height: 1.5;
+    letter-spacing: .12em;
+    text-indent: .12em;
+    text-transform: lowercase;
+    white-space: nowrap;
+    color: var(--status-color);
 }
 
 .status-dot {
     display: inline-block;
-
-    width: 3px;
-    height: 3px;
-
-    margin-right: 6px;
-
+    width: 4px;
+    height: 4px;
+    margin-right: 7px;
     border-radius: 50%;
-
-    vertical-align: 1px;
-
-    animation:
-        statusPulse 3.2s ease-in-out infinite;
+    vertical-align: 2px;
+    background: currentColor;
+    animation: statusPulse 3.2s ease-in-out infinite;
 }
 
-
 /* =========================================================
-   Theme Toggle
+   Project Navigation
+   Quiet entry points, not an in-page control panel
 ========================================================= */
 
-.theme-toggle {
-    position: fixed;
+.project-nav {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
 
-    top: 20px;
-    right: 20px;
+    width: 100%;
+    margin-top: 25px;
+    gap: clamp(10px, 2.2vw, 22px);
+}
 
-    z-index: 100;
+/*
+   Each link is a small, independent destination.
+   The frame remains nearly invisible until interaction.
+*/
+
+.project-link {
+    --link-progress: 0%;
+
+    position: relative;
+    isolation: isolate;
 
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    justify-content: center;
 
-    padding: 7px 10px;
+    min-width: 88px;
+    min-height: 48px;
+    padding: 13px 16px;
 
-    border: 1px solid transparent;
-    border-radius: 999px;
+    border: 1px solid var(--link-border);
+    border-radius: 2px;
 
+    color: var(--link-color);
     background: transparent;
 
     font-family:
@@ -1543,1155 +868,764 @@ body {
         "Menlo",
         monospace;
 
-    font-size: 7px;
+    font-size: 12px;
+    font-weight: 400;
     line-height: 1;
+    letter-spacing: .19em;
+    text-indent: .19em;
+    text-decoration: none;
+    text-transform: lowercase;
 
-    letter-spacing: .16em;
+    transition:
+        color .35s ease,
+        border-color .35s ease,
+        background-color .35s ease,
+        transform .35s ease;
+}
+
+/* A faint surface, revealed only on interaction */
+
+.project-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background: var(--link-surface);
+    opacity: 0;
+
+    transition: opacity .35s ease;
+}
+
+/* Fine line that grows from the center */
+
+.project-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+
+    width: var(--link-progress);
+    height: 1px;
+
+    background: var(--link-indicator-hover);
+    transform: translateX(-50%);
+
+    transition:
+        width .38s cubic-bezier(.2,.7,.2,1),
+        background-color .35s ease;
+}
+
+/* Small marker above the label */
+
+.project-link-marker {
+    position: absolute;
+    top: 7px;
+    left: 8px;
+
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+
+    background: var(--link-indicator);
+    opacity: .8;
+
+    transition:
+        background-color .35s ease,
+        opacity .35s ease,
+        box-shadow .35s ease;
+}
+
+.project-link:hover,
+.project-link:focus-visible {
+    color: var(--link-hover);
+    border-color: var(--link-border-hover);
+    background-color: transparent;
+    outline: none;
+}
+
+.project-link:hover {
+    --link-progress: 34%;
+}
+
+.project-link:hover::before,
+.project-link:focus-visible::before {
+    opacity: 1;
+}
+
+.project-link:focus-visible {
+    outline: 1px solid var(--link-border-hover);
+    outline-offset: 4px;
+}
+
+.project-link:focus-visible::after {
+    width: 34%;
+}
+
+.project-link:hover .project-link-marker,
+.project-link:focus-visible .project-link-marker {
+    background: var(--link-indicator-hover);
+    opacity: 1;
+    box-shadow: 0 0 7px var(--link-indicator);
+}
+
+/* A little separation without drawing attention */
+
+.project-link + .project-link {
+    margin-left: 0;
+}
+
+/* =========================================================
+   Theme Toggle
+========================================================= */
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 36px;
+    padding: 8px 12px;
+
+    border: 1px solid var(--link-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--link-color);
+
+    font-family:
+        "SFMono-Regular",
+        "Roboto Mono",
+        "Menlo",
+        monospace;
+
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: .12em;
 
     cursor: pointer;
-
     appearance: none;
 
     transition:
         background .35s ease,
         border-color .35s ease,
-        color .35s ease,
-        opacity .35s ease;
+        color .35s ease;
 }
-
-
-/* Dark toggle */
 
 .scene[data-theme="dark"] .theme-toggle {
-
-    color: rgba(220, 230, 235, .48);
-
-    border-color: rgba(220, 230, 235, .12);
-
-    background:
-        rgba(5, 7, 10, .22);
+    background: rgba(5,7,10,.22);
 }
-
-.scene[data-theme="dark"] .theme-toggle:hover {
-
-    color: rgba(220, 230, 235, .72);
-
-    border-color: rgba(220, 230, 235, .24);
-
-    background:
-        rgba(220, 230, 235, .045);
-}
-
-
-/* Light toggle */
 
 .scene[data-theme="light"] .theme-toggle {
-
-    color: rgba(35, 57, 66, .48);
-
-    border-color: rgba(35, 57, 66, .13);
-
-    background:
-        rgba(255, 255, 255, .18);
+    background: rgba(255,255,255,.18);
 }
 
-.scene[data-theme="light"] .theme-toggle:hover {
+.theme-toggle:hover {
+    color: var(--link-hover);
+    border-color: var(--link-border-hover);
+}
 
-    color: rgba(35, 57, 66, .70);
-
-    border-color: rgba(35, 57, 66, .22);
-
-    background:
-        rgba(255, 255, 255, .30);
+.theme-toggle:focus-visible {
+    outline: 1px solid var(--link-border-hover);
+    outline-offset: 3px;
 }
 
 .theme-toggle-icon {
-
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1;
 }
 
 .theme-toggle-label {
-    min-width: 28px;
+    min-width: 30px;
 }
 
+/* =========================================================
+   Animations — Atmosphere
+========================================================= */
+
+@keyframes atmosphereBreath {
+    0%, 100% {
+        opacity: .72;
+        transform: scale(1);
+    }
+    50% {
+        opacity: .92;
+        transform: scale(1.025);
+    }
+}
+
+@keyframes starLight {
+    0% {
+        opacity: .48;
+        filter: blur(0);
+        transform: translate3d(-1px,0,0) scale(.99);
+    }
+    35% {
+        opacity: .72;
+        filter: blur(.15px);
+        transform: translate3d(0,-.4px,0) scale(1);
+    }
+    68% {
+        opacity: .84;
+        filter: blur(.3px);
+        transform: translate3d(1px,.3px,0) scale(1.008);
+    }
+    100% {
+        opacity: .55;
+        filter: blur(0);
+        transform: translate3d(0,0,0) scale(.995);
+    }
+}
+
+@keyframes skyLight {
+    0% {
+        opacity: .55;
+        transform: translate3d(-12px,0,0) scaleX(.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(12px,-2px,0) scaleX(1.025);
+    }
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: .25; }
+    50% { opacity: .65; }
+}
 
 /* =========================================================
-   Animations — Island
+   Animations — Island / Reflection
 ========================================================= */
 
 @keyframes islandDriftDark {
-
-    0%,
-    100% {
-        transform:
-            scaleX(1)
-            scaleY(1)
-            translate3d(0, 0, 0);
+    0%, 100% {
+        transform: scaleX(1) scaleY(1) translate3d(0,0,0);
     }
-
     100% {
-        transform:
-            scaleX(1.015)
-            scaleY(.985)
-            translate3d(0, -1px, 0);
+        transform: scaleX(1.015) scaleY(.985) translate3d(0,-1px,0);
     }
 }
 
 @keyframes islandDriftLight {
-
-    0%,
-    100% {
-        transform:
-            scaleX(.995)
-            translate3d(0, 0, 0);
-    }
-
-    25% {
-        transform:
-            scaleX(1.012)
-            translate3d(0, -.3px, 0);
-    }
-
-    50% {
-        transform:
-            scaleX(.998)
-            translate3d(0, .15px, 0);
-    }
-
-    75% {
-        transform:
-            scaleX(1.008)
-            translate3d(0, -.2px, 0);
-    }
+    0%, 100% { transform: scaleX(.995) translate3d(0,0,0); }
+    25% { transform: scaleX(1.012) translate3d(0,-.3px,0); }
+    50% { transform: scaleX(.998) translate3d(0,.15px,0); }
+    75% { transform: scaleX(1.008) translate3d(0,-.2px,0); }
 }
 
-
-/* =========================================================
-   Gap Mist Animations
-========================================================= */
-
 @keyframes gapMistDark {
-
     0% {
         opacity: .48;
-
-        transform:
-            translateX(-50%)
-            scaleX(.96);
+        transform: translateX(-50%) scaleX(.96);
     }
-
     100% {
         opacity: .78;
-
-        transform:
-            translateX(-50%)
-            scaleX(1.04);
+        transform: translateX(-50%) scaleX(1.04);
     }
 }
 
 @keyframes gapMistLight {
-
     0% {
         opacity: .28;
-
-        transform:
-            translateX(-50%)
-            scaleX(.96);
+        transform: translateX(-50%) scaleX(.96);
     }
-
     100% {
         opacity: .46;
-
-        transform:
-            translateX(-50%)
-            scaleX(1.04);
+        transform: translateX(-50%) scaleX(1.04);
     }
 }
 
-
-/* =========================================================
-   Reflection Animations — Dark
-========================================================= */
-
 @keyframes reflectionPulseDark {
-
-    0%,
-    100% {
-        transform:
-            translateX(-50%)
-            scaleX(.92)
-            scaleY(.90);
-
+    0%, 100% {
+        transform: translateX(-50%) scaleX(.92) scaleY(.90);
         opacity: .42;
     }
-
     30% {
-        transform:
-            translateX(-50%)
-            scaleX(1.04)
-            scaleY(.98);
-
+        transform: translateX(-50%) scaleX(1.04) scaleY(.98);
         opacity: .58;
     }
-
     65% {
-        transform:
-            translateX(-50%)
-            scaleX(1.08)
-            scaleY(1.02);
-
+        transform: translateX(-50%) scaleX(1.08) scaleY(1.02);
         opacity: .52;
     }
 }
 
 @keyframes reflectionLineDark {
-
     0% {
-        transform:
-            translateX(-50%)
-            scaleX(.90);
-
+        transform: translateX(-50%) scaleX(.90);
         opacity: .24;
     }
-
     50% {
-        transform:
-            translateX(-50%)
-            scaleX(1);
-
+        transform: translateX(-50%) scaleX(1);
         opacity: .48;
     }
-
     100% {
-        transform:
-            translateX(-50%)
-            scaleX(1.04);
-
+        transform: translateX(-50%) scaleX(1.04);
         opacity: .42;
     }
 }
 
-
-/* =========================================================
-   Reflection Animations — Light
-========================================================= */
-
 @keyframes reflectionPulseLight {
-
-    0%,
-    100% {
-        transform:
-            translateX(-50%)
-            scaleX(.90)
-            scaleY(.90);
-
+    0%, 100% {
+        transform: translateX(-50%) scaleX(.90) scaleY(.90);
         opacity: .32;
     }
-
     35% {
-        transform:
-            translateX(-50%)
-            scaleX(1.015)
-            scaleY(.98);
-
+        transform: translateX(-50%) scaleX(1.015) scaleY(.98);
         opacity: .46;
     }
-
     70% {
-        transform:
-            translateX(-50%)
-            scaleX(1.045)
-            scaleY(1);
-
+        transform: translateX(-50%) scaleX(1.045) scaleY(1);
         opacity: .40;
     }
 }
 
 @keyframes reflectionLineLight {
-
     0% {
-        transform:
-            translateX(-50%)
-            scaleX(.90);
-
+        transform: translateX(-50%) scaleX(.90);
         opacity: .18;
     }
-
     50% {
-        transform:
-            translateX(-50%)
-            scaleX(1);
-
+        transform: translateX(-50%) scaleX(1);
         opacity: .34;
     }
-
     100% {
-        transform:
-            translateX(-50%)
-            scaleX(1.035);
-
+        transform: translateX(-50%) scaleX(1.035);
         opacity: .28;
     }
 }
 
-
 /* =========================================================
-   Light Ocean Animations
+   Animations — Ocean
 ========================================================= */
 
 @keyframes distantWaves {
-
     0% {
-        transform:
-            translate3d(-7%,0,0)
-            rotate(-.15deg)
-            scaleX(.98)
-            scaleY(.96);
+        transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
-
     15% {
-        transform:
-            translate3d(-3%,1%,0)
-            rotate(.08deg)
-            scaleX(1.015)
-            scaleY(1.035);
+        transform: translate3d(-3%,1%,0) rotate(.08deg) scaleX(1.015) scaleY(1.035);
     }
-
     30% {
-        transform:
-            translate3d(2%,-.6%,0)
-            rotate(-.08deg)
-            scaleX(.985)
-            scaleY(.975);
+        transform: translate3d(2%,-.6%,0) rotate(-.08deg) scaleX(.985) scaleY(.975);
     }
-
     45% {
-        transform:
-            translate3d(7%,.8%,0)
-            rotate(.16deg)
-            scaleX(1.025)
-            scaleY(1.05);
+        transform: translate3d(7%,.8%,0) rotate(.16deg) scaleX(1.025) scaleY(1.05);
     }
-
     60% {
-        transform:
-            translate3d(4%,-.8%,0)
-            rotate(-.10deg)
-            scaleX(.99)
-            scaleY(.97);
+        transform: translate3d(4%,-.8%,0) rotate(-.10deg) scaleX(.99) scaleY(.97);
     }
-
     75% {
-        transform:
-            translate3d(-1%,.7%,0)
-            rotate(.10deg)
-            scaleX(1.02)
-            scaleY(1.04);
+        transform: translate3d(-1%,.7%,0) rotate(.10deg) scaleX(1.02) scaleY(1.04);
     }
-
     90% {
-        transform:
-            translate3d(-5%,-.4%,0)
-            rotate(-.06deg)
-            scaleX(.99)
-            scaleY(.98);
+        transform: translate3d(-5%,-.4%,0) rotate(-.06deg) scaleX(.99) scaleY(.98);
     }
-
     100% {
-        transform:
-            translate3d(-7%,0,0)
-            rotate(-.15deg)
-            scaleX(.98)
-            scaleY(.96);
+        transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
 }
 
 @keyframes nearWaves {
-
     0% {
-        transform:
-            translate3d(8%,0,0)
-            rotate(.18deg)
-            scaleX(.96)
-            scaleY(.94);
+        transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
-
     12% {
-        transform:
-            translate3d(4%,1.8%,0)
-            rotate(-.08deg)
-            scaleX(1.02)
-            scaleY(1.055);
+        transform: translate3d(4%,1.8%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.055);
     }
-
     25% {
-        transform:
-            translate3d(-1%,-.7%,0)
-            rotate(.14deg)
-            scaleX(.975)
-            scaleY(.965);
+        transform: translate3d(-1%,-.7%,0) rotate(.14deg) scaleX(.975) scaleY(.965);
     }
-
     38% {
-        transform:
-            translate3d(-7%,1.5%,0)
-            rotate(-.18deg)
-            scaleX(1.035)
-            scaleY(1.075);
+        transform: translate3d(-7%,1.5%,0) rotate(-.18deg) scaleX(1.035) scaleY(1.075);
     }
-
     50% {
-        transform:
-            translate3d(-4%,-.8%,0)
-            rotate(.08deg)
-            scaleX(.97)
-            scaleY(.955);
+        transform: translate3d(-4%,-.8%,0) rotate(.08deg) scaleX(.97) scaleY(.955);
     }
-
     63% {
-        transform:
-            translate3d(2%,1.2%,0)
-            rotate(-.13deg)
-            scaleX(1.025)
-            scaleY(1.065);
+        transform: translate3d(2%,1.2%,0) rotate(-.13deg) scaleX(1.025) scaleY(1.065);
     }
-
     76% {
-        transform:
-            translate3d(7%,-.6%,0)
-            rotate(.17deg)
-            scaleX(.98)
-            scaleY(.97);
+        transform: translate3d(7%,-.6%,0) rotate(.17deg) scaleX(.98) scaleY(.97);
     }
-
     88% {
-        transform:
-            translate3d(3%,1%,0)
-            rotate(-.08deg)
-            scaleX(1.02)
-            scaleY(1.045);
+        transform: translate3d(3%,1%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.045);
     }
-
     100% {
-        transform:
-            translate3d(8%,0,0)
-            rotate(.18deg)
-            scaleX(.96)
-            scaleY(.94);
+        transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
 }
 
 @keyframes waterDrift {
-
-    0%,
-    100% {
-        transform:
-            translate3d(-3%,0,0)
-            scaleY(.98);
-    }
-
-    50% {
-        transform:
-            translate3d(4%,2.5%,0)
-            scaleY(1.08);
-    }
+    0%, 100% { transform: translate3d(-3%,0,0) scaleY(.98); }
+    50% { transform: translate3d(4%,2.5%,0) scaleY(1.08); }
 }
 
 @keyframes surfaceFar {
-
-    0%,
-    100% {
-        transform:
-            translate3d(3%,-1%,0)
-            scale(.98);
-    }
-
-    50% {
-        transform:
-            translate3d(-5%,1.5%,0)
-            scale(1.07);
-    }
+    0%, 100% { transform: translate3d(3%,-1%,0) scale(.98); }
+    50% { transform: translate3d(-5%,1.5%,0) scale(1.07); }
 }
 
 @keyframes surfaceMid {
-
-    0%,
-    100% {
-        transform:
-            translate3d(-4%,0,0)
-            scaleY(.97);
-    }
-
-    25% {
-        transform:
-            translate3d(0%,1.3%,0)
-            scaleY(1.04);
-    }
-
-    50% {
-        transform:
-            translate3d(5%,-1%,0)
-            scaleY(1.09);
-    }
-
-    75% {
-        transform:
-            translate3d(1%,1%,0)
-            scaleY(1.03);
-    }
+    0%, 100% { transform: translate3d(-4%,0,0) scaleY(.97); }
+    25% { transform: translate3d(0,1.3%,0) scaleY(1.04); }
+    50% { transform: translate3d(5%,-1%,0) scaleY(1.09); }
+    75% { transform: translate3d(1%,1%,0) scaleY(1.03); }
 }
 
 @keyframes surfaceNear {
-
-    0%,
-    100% {
-        transform:
-            translate3d(4%,0,0)
-            scale(.97);
-    }
-
-    25% {
-        transform:
-            translate3d(0%,2%,0)
-            scale(1.035);
-    }
-
-    50% {
-        transform:
-            translate3d(-5%,-1%,0)
-            scale(1.08);
-    }
-
-    75% {
-        transform:
-            translate3d(-1%,1.5%,0)
-            scale(1.03);
-    }
+    0%, 100% { transform: translate3d(4%,0,0) scale(.97); }
+    25% { transform: translate3d(0,2%,0) scale(1.035); }
+    50% { transform: translate3d(-5%,-1%,0) scale(1.08); }
+    75% { transform: translate3d(-1%,1.5%,0) scale(1.03); }
 }
 
 @keyframes gapsDrift {
-
-    0%,
-    100% {
-        transform:
-            translate3d(0,0,0)
-            scaleY(.98);
-    }
-
-    25% {
-        transform:
-            translate3d(-2%,.8%,0)
-            scaleY(1.04);
-    }
-
-    50% {
-        transform:
-            translate3d(-4%,-.4%,0)
-            scaleY(.97);
-    }
-
-    75% {
-        transform:
-            translate3d(-1%,.7%,0)
-            scaleY(1.05);
-    }
+    0%, 100% { transform: translate3d(0,0,0) scaleY(.98); }
+    25% { transform: translate3d(-2%,.8%,0) scaleY(1.04); }
+    50% { transform: translate3d(-4%,-.4%,0) scaleY(.97); }
+    75% { transform: translate3d(-1%,.7%,0) scaleY(1.05); }
 }
 
-
-/* =========================================================
-   Dark Ocean Animations
-========================================================= */
-
 @keyframes oceanWaveFar {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(-3px)
-            scaleX(.90);
-    }
-
-    25% {
-        transform:
-            translateX(-48%)
-            translateY(3px)
-            scaleX(1.02);
-    }
-
-    55% {
-        transform:
-            translateX(-53%)
-            translateY(7px)
-            scaleX(1.10);
-    }
-
-    100% {
-        transform:
-            translateX(-47%)
-            translateY(-4px)
-            scaleX(.91);
-    }
+    0% { transform: translateX(-50%) translateY(-3px) scaleX(.90); }
+    25% { transform: translateX(-48%) translateY(3px) scaleX(1.02); }
+    55% { transform: translateX(-53%) translateY(7px) scaleX(1.10); }
+    100% { transform: translateX(-47%) translateY(-4px) scaleX(.91); }
 }
 
 @keyframes oceanWaveMid {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(5px)
-            scaleX(1.08);
-    }
-
-    30% {
-        transform:
-            translateX(-53%)
-            translateY(-5px)
-            scaleX(.91);
-    }
-
-    65% {
-        transform:
-            translateX(-47%)
-            translateY(8px)
-            scaleX(1.07);
-    }
-
-    100% {
-        transform:
-            translateX(-52%)
-            translateY(-3px)
-            scaleX(.94);
-    }
+    0% { transform: translateX(-50%) translateY(5px) scaleX(1.08); }
+    30% { transform: translateX(-53%) translateY(-5px) scaleX(.91); }
+    65% { transform: translateX(-47%) translateY(8px) scaleX(1.07); }
+    100% { transform: translateX(-52%) translateY(-3px) scaleX(.94); }
 }
 
 @keyframes oceanWaveNear {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(-5px)
-            scaleX(.91);
-    }
-
-    28% {
-        transform:
-            translateX(-47%)
-            translateY(5px)
-            scaleX(1.05);
-    }
-
-    58% {
-        transform:
-            translateX(-53%)
-            translateY(11px)
-            scaleX(1.10);
-    }
-
-    100% {
-        transform:
-            translateX(-48%)
-            translateY(-7px)
-            scaleX(.93);
-    }
+    0% { transform: translateX(-50%) translateY(-5px) scaleX(.91); }
+    28% { transform: translateX(-47%) translateY(5px) scaleX(1.05); }
+    58% { transform: translateX(-53%) translateY(11px) scaleX(1.10); }
+    100% { transform: translateX(-48%) translateY(-7px) scaleX(.93); }
 }
 
 @keyframes oceanSurfaceFar {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(4px)
-            scaleX(.92);
-    }
-
-    35% {
-        transform:
-            translateX(-53%)
-            translateY(-5px)
-            scaleX(1.06);
-    }
-
-    70% {
-        transform:
-            translateX(-47%)
-            translateY(7px)
-            scaleX(1.08);
-    }
-
-    100% {
-        transform:
-            translateX(-51%)
-            translateY(-3px)
-            scaleX(.94);
-    }
+    0% { transform: translateX(-50%) translateY(4px) scaleX(.92); }
+    35% { transform: translateX(-53%) translateY(-5px) scaleX(1.06); }
+    70% { transform: translateX(-47%) translateY(7px) scaleX(1.08); }
+    100% { transform: translateX(-51%) translateY(-3px) scaleX(.94); }
 }
 
 @keyframes oceanSurfaceMid {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(-5px)
-            scaleX(1.07);
-    }
-
-    30% {
-        transform:
-            translateX(-47%)
-            translateY(6px)
-            scaleX(.93);
-    }
-
-    65% {
-        transform:
-            translateX(-53%)
-            translateY(11px)
-            scaleX(1.05);
-    }
-
-    100% {
-        transform:
-            translateX(-48%)
-            translateY(-6px)
-            scaleX(.95);
-    }
+    0% { transform: translateX(-50%) translateY(-5px) scaleX(1.07); }
+    30% { transform: translateX(-47%) translateY(6px) scaleX(.93); }
+    65% { transform: translateX(-53%) translateY(11px) scaleX(1.05); }
+    100% { transform: translateX(-48%) translateY(-6px) scaleX(.95); }
 }
 
 @keyframes oceanSurfaceNear {
-
-    0% {
-        transform:
-            translateX(-50%)
-            translateY(6px)
-            scaleX(.90);
-    }
-
-    32% {
-        transform:
-            translateX(-53%)
-            translateY(-7px)
-            scaleX(1.06);
-    }
-
-    62% {
-        transform:
-            translateX(-47%)
-            translateY(12px)
-            scaleX(1.10);
-    }
-
-    100% {
-        transform:
-            translateX(-52%)
-            translateY(-5px)
-            scaleX(.92);
-    }
+    0% { transform: translateX(-50%) translateY(6px) scaleX(.90); }
+    32% { transform: translateX(-53%) translateY(-7px) scaleX(1.06); }
+    62% { transform: translateX(-47%) translateY(12px) scaleX(1.10); }
+    100% { transform: translateX(-52%) translateY(-5px) scaleX(.92); }
 }
 
 @keyframes waterAtmosphere {
-
     0% {
         opacity: .55;
-
-        transform:
-            translate3d(-20px, 2px, 0)
-            scaleX(.97);
+        transform: translate3d(-20px,2px,0) scaleX(.97);
     }
-
     35% {
         opacity: .88;
-
-        transform:
-            translate3d(5px, -2px, 0)
-            scaleX(1.015);
+        transform: translate3d(5px,-2px,0) scaleX(1.015);
     }
-
     70% {
         opacity: 1;
-
-        transform:
-            translate3d(22px, 3px, 0)
-            scaleX(1.035);
+        transform: translate3d(22px,3px,0) scaleX(1.035);
     }
-
     100% {
         opacity: .62;
-
-        transform:
-            translate3d(-8px, -3px, 0)
-            scaleX(.985);
+        transform: translate3d(-8px,-3px,0) scaleX(.985);
     }
 }
 
 @keyframes oceanMist {
-
     0% {
         opacity: .55;
-
-        transform:
-            translate3d(-10px, 0, 0)
-            scaleX(.98);
+        transform: translate3d(-10px,0,0) scaleX(.98);
     }
-
     100% {
         opacity: .9;
-
-        transform:
-            translate3d(12px, -2px, 0)
-            scaleX(1.025);
+        transform: translate3d(12px,-2px,0) scaleX(1.025);
     }
 }
-
-
-/* =========================================================
-   Atmosphere / Status Animation
-========================================================= */
-
-@keyframes starLight {
-
-    0% {
-        opacity: .48;
-        filter: blur(0);
-        transform:
-            translate3d(-1px, 0, 0)
-            scale(.99);
-    }
-
-    35% {
-        opacity: .72;
-        filter: blur(.15px);
-        transform:
-            translate3d(0, -.4px, 0)
-            scale(1);
-    }
-
-    68% {
-        opacity: .84;
-        filter: blur(.3px);
-        transform:
-            translate3d(1px, .3px, 0)
-            scale(1.008);
-    }
-
-    100% {
-        opacity: .55;
-        filter: blur(0);
-        transform:
-            translate3d(0, 0, 0)
-            scale(.995);
-    }
-}
-
-@keyframes skyLight {
-
-    0% {
-        opacity: .55;
-        transform:
-            translate3d(-12px, 0, 0)
-            scaleX(.98);
-    }
-
-    100% {
-        opacity: 1;
-        transform:
-            translate3d(12px, -2px, 0)
-            scaleX(1.025);
-    }
-}
-
-@keyframes statusPulse {
-
-    0%,
-    100% {
-        opacity: .25;
-    }
-
-    50% {
-        opacity: .65;
-    }
-}
-
 
 /* =========================================================
    Mobile
 ========================================================= */
 
 @media (max-width: 600px) {
-
     .scene {
         min-height: 500px;
     }
 
     .brand {
-        bottom: 8vh;
+        bottom: max(5vh, 26px);
+        max-width: calc(100% - 28px);
     }
 
     .brand-name {
-        font-size: 15px;
+        font-size: 19px;
+        letter-spacing: .22em;
+        text-indent: .22em;
     }
 
     .brand-status {
-        font-size: 7px;
+        margin-top: 7px;
+        font-size: 10px;
+        letter-spacing: .08em;
+        text-indent: .08em;
+    }
+
+    .project-nav {
+        gap: 9px;
+        margin-top: 21px;
+    }
+
+    .project-link {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 48px;
+        padding: 13px 10px;
+        font-size: 12px;
+        letter-spacing: .15em;
+        text-indent: .15em;
+    }
+
+    .project-link-marker {
+        top: 7px;
+        left: 7px;
     }
 
     .theme-toggle {
         top: 14px;
         right: 14px;
+        min-height: 38px;
+        padding: 9px 12px;
+        font-size: 10px;
+    }
 
-        padding: 6px 9px;
-
-        font-size: 6.5px;
+    .theme-toggle-icon {
+        font-size: 12px;
     }
 }
 
+@media (max-width: 360px) {
+    .brand {
+        bottom: 4vh;
+        max-width: calc(100% - 24px);
+    }
+
+    .project-nav {
+        gap: 7px;
+        margin-top: 18px;
+    }
+
+    .project-link {
+        min-height: 46px;
+        padding-inline: 7px;
+        font-size: 11px;
+        letter-spacing: .13em;
+        text-indent: .13em;
+    }
+}
+
+/* Short screens: keep the complete brand block visible */
+
+@media (max-height: 650px) and (min-width: 601px) {
+    .brand {
+        bottom: 22px;
+    }
+
+    .project-nav {
+        margin-top: 16px;
+    }
+}
+
+@media (max-height: 620px) and (max-width: 600px) {
+    .brand {
+        bottom: 16px;
+    }
+
+    .project-nav {
+        margin-top: 13px;
+    }
+}
 
 /* =========================================================
    Reduced Motion
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
     }
 }
-
 </style>
 </head>
-
 
 <body>
 
 <main class="scene" data-theme="dark">
 
-    <!-- =====================================================
-         Theme Toggle
-    ====================================================== -->
-
+    <!-- Theme Toggle -->
     <button
         class="theme-toggle"
         type="button"
         aria-label="ライトモードに切り替える"
         aria-pressed="false"
     >
-        <span class="theme-toggle-icon">○</span>
+        <span class="theme-toggle-icon" aria-hidden="true">○</span>
         <span class="theme-toggle-label">LIGHT</span>
     </button>
 
-
     <!-- Atmosphere -->
+    <div class="atmosphere" aria-hidden="true"></div>
 
-    <div class="atmosphere"></div>
-
-
-    <!-- =====================================================
-         Island
-
-         島の上側20%だけを表示。
-
-         島の下端
-              ↓
-             4px
-              ↓
-         水平線
-
-    ====================================================== -->
-
-    <div class="island-window">
+    <!-- Island -->
+    <div class="island-window" aria-hidden="true">
         <div class="island"></div>
     </div>
 
-
     <!-- Island / Horizon gap -->
-
-    <div class="island-gap-mist"></div>
-
+    <div class="island-gap-mist" aria-hidden="true"></div>
 
     <!-- Island reflection -->
-
-    <div class="island-shadow"></div>
-
+    <div class="island-shadow" aria-hidden="true"></div>
 
     <!-- Horizon -->
+    <div class="horizon" aria-hidden="true"></div>
 
-    <div class="horizon"></div>
-
-
-    <!-- =====================================================
-         Ocean
-    ====================================================== -->
-
-    <div class="ocean">
-
+    <!-- Ocean -->
+    <div class="ocean" aria-hidden="true">
         <div class="water-gaps"></div>
-
         <div class="ocean-mist"></div>
-
         <div class="water"></div>
-
         <div class="surface-far"></div>
-
         <div class="surface-mid"></div>
-
         <div class="surface-near"></div>
-
     </div>
 
+    <!-- Brand -->
+    <footer class="brand">
 
-    <!-- =====================================================
-         Brand
-    ====================================================== -->
-
-    <div class="brand">
-
-        <h1 class="brand-name">
-            esenus
-        </h1>
+        <h1 class="brand-name">esenus</h1>
 
         <div class="brand-status">
-            <span class="status-dot"></span>
-            awaiting initialization
+            <span class="status-dot" aria-hidden="true"></span>awaiting initialization
         </div>
 
-    </div>
+        <!-- Project Navigation -->
+        <nav class="project-nav" aria-label="Projects">
+
+            <!-- Replace these example URLs with the actual project URLs -->
+            <a class="project-link" href="https://loom.example.com/">
+                <span class="project-link-marker" aria-hidden="true"></span>
+                <span>loom</span>
+            </a>
+
+            <a class="project-link" href="https://nest.example.com/">
+                <span class="project-link-marker" aria-hidden="true"></span>
+                <span>nest</span>
+            </a>
+
+            <a class="project-link" href="https://logs.example.com/">
+                <span class="project-link-marker" aria-hidden="true"></span>
+                <span>logs</span>
+            </a>
+
+        </nav>
+
+    </footer>
 
 </main>
 
-
 <script>
-
 /* =========================================================
    Theme Toggle
 ========================================================= */
 
 (() => {
-
-    const scene =
-        document.querySelector(".scene");
-
-    const toggle =
-        document.querySelector(".theme-toggle");
-
-    const icon =
-        toggle.querySelector(".theme-toggle-icon");
-
-    const label =
-        toggle.querySelector(".theme-toggle-label");
-
-
-    /* -------------------------------------------------------
-       Saved Theme
-    ------------------------------------------------------- */
+    const scene = document.querySelector(".scene");
+    const toggle = document.querySelector(".theme-toggle");
+    const icon = toggle.querySelector(".theme-toggle-icon");
+    const label = toggle.querySelector(".theme-toggle-label");
 
     let savedTheme = null;
 
     try {
-        savedTheme =
-            localStorage.getItem("esenus-theme");
+        savedTheme = localStorage.getItem("esenus-theme");
     } catch (error) {
         savedTheme = null;
     }
 
-
-    if (
-        savedTheme === "light" ||
-        savedTheme === "dark"
-    ) {
+    if (savedTheme === "light" || savedTheme === "dark") {
         scene.dataset.theme = savedTheme;
     }
 
-
-    /* -------------------------------------------------------
-       Update Toggle UI
-    ------------------------------------------------------- */
-
     function updateToggle() {
+        const isLight = scene.dataset.theme === "light";
 
-        const isLight =
-            scene.dataset.theme === "light";
+        label.textContent = isLight ? "DARK" : "LIGHT";
+        icon.textContent = isLight ? "◐" : "○";
 
+        toggle.setAttribute(
+            "aria-label",
+            isLight
+                ? "ダークモードに切り替える"
+                : "ライトモードに切り替える"
+        );
 
-        /*
-         * ボタンには「現在のテーマ」ではなく
-         * 「切り替え先」を表示。
-         */
+        toggle.setAttribute(
+            "aria-pressed",
+            String(isLight)
+        );
 
-        if (isLight) {
-
-            label.textContent = "DARK";
-            icon.textContent = "◐";
-
-            toggle.setAttribute(
-                "aria-label",
-                "ダークモードに切り替える"
+        document.querySelector('meta[name="theme-color"]')
+            .setAttribute(
+                "content",
+                isLight ? "#eaf2f5" : "#05070a"
             );
-
-            toggle.setAttribute(
-                "aria-pressed",
-                "true"
-            );
-
-        } else {
-
-            label.textContent = "LIGHT";
-            icon.textContent = "○";
-
-            toggle.setAttribute(
-                "aria-label",
-                "ライトモードに切り替える"
-            );
-
-            toggle.setAttribute(
-                "aria-pressed",
-                "false"
-            );
-        }
     }
 
-
-    /* -------------------------------------------------------
-       Toggle
-    ------------------------------------------------------- */
-
     toggle.addEventListener("click", () => {
-
         const nextTheme =
-            scene.dataset.theme === "dark"
-                ? "light"
-                : "dark";
+            scene.dataset.theme === "dark" ? "light" : "dark";
 
-
-        scene.dataset.theme =
-            nextTheme;
-
+        scene.dataset.theme = nextTheme;
 
         try {
-            localStorage.setItem(
-                "esenus-theme",
-                nextTheme
-            );
+            localStorage.setItem("esenus-theme", nextTheme);
         } catch (error) {
             /* localStorage unavailable */
         }
 
-
         updateToggle();
     });
 
-
-    /* -------------------------------------------------------
-       Initial State
-    ------------------------------------------------------- */
-
     updateToggle();
-
 })();
-
 </script>
 
 </body>
 </html>
+```
