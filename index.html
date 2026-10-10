@@ -76,7 +76,6 @@ a {
     --link-hover: rgba(230,239,243,.96);
     --link-border: rgba(220,230,235,.13);
     --link-border-hover: rgba(220,230,235,.32);
-    --link-indicator: rgba(220,230,235,.35);
     --link-indicator-hover: rgba(220,230,235,.85);
     --link-surface: rgba(220,230,235,.025);
 
@@ -114,7 +113,6 @@ a {
     --link-hover: rgba(27,49,57,.96);
     --link-border: rgba(35,57,66,.16);
     --link-border-hover: rgba(35,57,66,.34);
-    --link-indicator: rgba(35,57,66,.38);
     --link-indicator-hover: rgba(35,57,66,.80);
     --link-surface: rgba(35,57,66,.025);
 
@@ -798,8 +796,6 @@ a {
 }
 
 .project-link {
-    --link-progress: 0%;
-
     position: relative;
     display: flex;
     flex-direction: column;
@@ -825,16 +821,16 @@ a {
     border-left: 1px solid var(--link-border);
 }
 
-/* Project heading and status lamp */
+/* Project heading */
 .project-link-heading {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     min-height: 17px;
 }
 
-/* Status lamp: left of project name */
+/* Status lamp: left of the project name */
 .status-dot {
     display: inline-block;
     width: 5px;
@@ -846,7 +842,7 @@ a {
     box-shadow: none;
 }
 
-/* Operational: active lamp */
+/* Operational */
 .status-dot.is-operational {
     background: var(--dot-operational);
     opacity: 1;
@@ -858,7 +854,7 @@ a {
     animation: statusPulse 3.2s ease-in-out infinite;
 }
 
-/* In development: steady amber lamp */
+/* In development */
 .status-dot.is-development {
     background: var(--dot-development);
     opacity: .85;
@@ -882,40 +878,39 @@ a {
     text-transform: lowercase;
 }
 
+/* External-link mark: small and to the right */
+.project-link-external {
+    display: inline-block;
+    margin-left: -2px;
+    color: var(--status-color);
+    font-family: sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    transform: translate(0, 0);
+    transition:
+        color .3s ease,
+        transform .3s cubic-bezier(.2,.7,.2,1);
+}
+
+.project-link:hover .project-link-external,
+.project-link:focus-visible .project-link-external {
+    color: var(--link-hover);
+    transform: translate(2px, -2px);
+}
+
 /* Fine underline */
 .project-link-name::after {
     content: "";
     position: absolute;
     left: 50%;
     bottom: -5px;
-    width: var(--link-progress);
+    width: 0;
     height: 1px;
     background: var(--link-indicator-hover);
     transform: translateX(-50%);
     transition: width .38s cubic-bezier(.2,.7,.2,1);
-}
-
-/* External link arrow */
-.project-link-arrow {
-    display: inline-block;
-    margin-left: 3px;
-    color: var(--link-indicator);
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Helvetica Neue",
-        sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1;
-    letter-spacing: 0;
-    text-indent: 0;
-    opacity: .65;
-    transform: translate(0, 0);
-    transition:
-        color .35s ease,
-        opacity .35s ease,
-        transform .35s cubic-bezier(.2,.7,.2,1);
 }
 
 /* Short description */
@@ -931,6 +926,29 @@ a {
     transition: color .35s ease;
 }
 
+.project-link:hover,
+.project-link:focus-visible {
+    color: var(--link-hover);
+    background: var(--link-surface);
+    outline: none;
+}
+
+.project-link:hover .project-link-name::after,
+.project-link:focus-visible .project-link-name::after {
+    width: 42%;
+}
+
+.project-link:hover .project-link-description,
+.project-link:focus-visible .project-link-description {
+    color: var(--link-color);
+}
+
+.project-link:focus-visible {
+    outline: 1px solid var(--link-border-hover);
+    outline-offset: 3px;
+    z-index: 1;
+}
+
 /* Not yet available */
 .project-link.is-offline {
     opacity: .58;
@@ -942,58 +960,14 @@ a {
     animation: none;
 }
 
-.project-link.is-offline .project-link-arrow {
-    opacity: .35;
-}
-
-/* Hover and keyboard focus */
-.project-link:hover,
-.project-link:focus-visible {
-    color: var(--link-hover);
-    background: var(--link-surface);
-    outline: none;
-}
-
-.project-link:hover {
-    --link-progress: 42%;
-}
-
-.project-link:hover .project-link-description,
-.project-link:focus-visible .project-link-description {
-    color: var(--link-color);
-}
-
-.project-link:hover .project-link-arrow,
-.project-link:focus-visible .project-link-arrow {
-    color: var(--link-hover);
-    opacity: .95;
-    transform: translate(2px, -2px);
-}
-
-.project-link:focus-visible {
-    outline: 1px solid var(--link-border-hover);
-    outline-offset: 3px;
-    z-index: 1;
-}
-
-.project-link:focus-visible .project-link-name {
-    --link-progress: 42%;
-}
-
 /* Status pulse */
 @keyframes statusPulse {
-    0%,
-    100% {
-        opacity: .45;
-    }
-
-    50% {
-        opacity: 1;
-    }
+    0%, 100% { opacity: .45; }
+    50% { opacity: 1; }
 }
 
 /* =========================================================
-   Theme Toggle
+   Theme Toggle — Icon Only
 ========================================================= */
 .theme-toggle {
     position: fixed;
@@ -1004,32 +978,24 @@ a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
 
-    min-height: 36px;
-    padding: 8px 12px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
 
     border: 1px solid var(--link-border);
-    border-radius: 999px;
+    border-radius: 50%;
     background: transparent;
     color: var(--link-color);
-
-    font-family:
-        "SFMono-Regular",
-        "Roboto Mono",
-        "Menlo",
-        monospace;
-    font-size: 10px;
-    line-height: 1;
-    letter-spacing: .12em;
 
     cursor: pointer;
     appearance: none;
 
     transition:
-        background .35s ease,
+        background-color .35s ease,
         border-color .35s ease,
-        color .35s ease;
+        color .35s ease,
+        transform .35s ease;
 }
 
 .scene[data-theme="dark"] .theme-toggle {
@@ -1043,6 +1009,7 @@ a {
 .theme-toggle:hover {
     color: var(--link-hover);
     border-color: var(--link-border-hover);
+    transform: rotate(8deg);
 }
 
 .theme-toggle:focus-visible {
@@ -1050,13 +1017,15 @@ a {
     outline-offset: 3px;
 }
 
-.theme-toggle-icon {
-    font-size: 12px;
-    line-height: 1;
-}
-
-.theme-toggle-label {
-    min-width: 30px;
+.theme-toggle svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* =========================================================
@@ -1067,7 +1036,6 @@ a {
         opacity: .72;
         transform: scale(1);
     }
-
     50% {
         opacity: .92;
         transform: scale(1.025);
@@ -1080,19 +1048,16 @@ a {
         filter: blur(0);
         transform: translate3d(-1px,0,0) scale(.99);
     }
-
     35% {
         opacity: .72;
         filter: blur(.15px);
         transform: translate3d(0,-.4px,0) scale(1);
     }
-
     68% {
         opacity: .84;
         filter: blur(.3px);
         transform: translate3d(1px,.3px,0) scale(1.008);
     }
-
     100% {
         opacity: .55;
         filter: blur(0);
@@ -1105,7 +1070,6 @@ a {
         opacity: .55;
         transform: translate3d(-12px,0,0) scaleX(.98);
     }
-
     100% {
         opacity: 1;
         transform: translate3d(12px,-2px,0) scaleX(1.025);
@@ -1119,28 +1083,16 @@ a {
     0%, 100% {
         transform: scaleX(1) scaleY(1) translate3d(0,0,0);
     }
-
     100% {
         transform: scaleX(1.015) scaleY(.985) translate3d(0,-1px,0);
     }
 }
 
 @keyframes islandDriftLight {
-    0%, 100% {
-        transform: scaleX(.995) translate3d(0,0,0);
-    }
-
-    25% {
-        transform: scaleX(1.012) translate3d(0,-.3px,0);
-    }
-
-    50% {
-        transform: scaleX(.998) translate3d(0,.15px,0);
-    }
-
-    75% {
-        transform: scaleX(1.008) translate3d(0,-.2px,0);
-    }
+    0%, 100% { transform: scaleX(.995) translate3d(0,0,0); }
+    25% { transform: scaleX(1.012) translate3d(0,-.3px,0); }
+    50% { transform: scaleX(.998) translate3d(0,.15px,0); }
+    75% { transform: scaleX(1.008) translate3d(0,-.2px,0); }
 }
 
 @keyframes gapMistDark {
@@ -1148,7 +1100,6 @@ a {
         opacity: .48;
         transform: translateX(-50%) scaleX(.96);
     }
-
     100% {
         opacity: .78;
         transform: translateX(-50%) scaleX(1.04);
@@ -1160,7 +1111,6 @@ a {
         opacity: .28;
         transform: translateX(-50%) scaleX(.96);
     }
-
     100% {
         opacity: .46;
         transform: translateX(-50%) scaleX(1.04);
@@ -1172,12 +1122,10 @@ a {
         transform: translateX(-50%) scaleX(.92) scaleY(.90);
         opacity: .42;
     }
-
     30% {
         transform: translateX(-50%) scaleX(1.04) scaleY(.98);
         opacity: .58;
     }
-
     65% {
         transform: translateX(-50%) scaleX(1.08) scaleY(1.02);
         opacity: .52;
@@ -1189,12 +1137,10 @@ a {
         transform: translateX(-50%) scaleX(.90);
         opacity: .24;
     }
-
     50% {
         transform: translateX(-50%) scaleX(1);
         opacity: .48;
     }
-
     100% {
         transform: translateX(-50%) scaleX(1.04);
         opacity: .42;
@@ -1206,12 +1152,10 @@ a {
         transform: translateX(-50%) scaleX(.90) scaleY(.90);
         opacity: .32;
     }
-
     35% {
         transform: translateX(-50%) scaleX(1.015) scaleY(.98);
         opacity: .46;
     }
-
     70% {
         transform: translateX(-50%) scaleX(1.045) scaleY(1);
         opacity: .40;
@@ -1223,12 +1167,10 @@ a {
         transform: translateX(-50%) scaleX(.90);
         opacity: .18;
     }
-
     50% {
         transform: translateX(-50%) scaleX(1);
         opacity: .34;
     }
-
     100% {
         transform: translateX(-50%) scaleX(1.035);
         opacity: .28;
@@ -1242,31 +1184,24 @@ a {
     0% {
         transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
-
     15% {
         transform: translate3d(-3%,1%,0) rotate(.08deg) scaleX(1.015) scaleY(1.035);
     }
-
     30% {
         transform: translate3d(2%,-.6%,0) rotate(-.08deg) scaleX(.985) scaleY(.975);
     }
-
     45% {
         transform: translate3d(7%,.8%,0) rotate(.16deg) scaleX(1.025) scaleY(1.05);
     }
-
     60% {
         transform: translate3d(4%,-.8%,0) rotate(-.10deg) scaleX(.99) scaleY(.97);
     }
-
     75% {
         transform: translate3d(-1%,.7%,0) rotate(.10deg) scaleX(1.02) scaleY(1.04);
     }
-
     90% {
         transform: translate3d(-5%,-.4%,0) rotate(-.06deg) scaleX(.99) scaleY(.98);
     }
-
     100% {
         transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
@@ -1276,220 +1211,103 @@ a {
     0% {
         transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
-
     12% {
         transform: translate3d(4%,1.8%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.055);
     }
-
     25% {
         transform: translate3d(-1%,-.7%,0) rotate(.14deg) scaleX(.975) scaleY(.965);
     }
-
     38% {
         transform: translate3d(-7%,1.5%,0) rotate(-.18deg) scaleX(1.035) scaleY(1.075);
     }
-
     50% {
         transform: translate3d(-4%,-.8%,0) rotate(.08deg) scaleX(.97) scaleY(.955);
     }
-
     63% {
         transform: translate3d(2%,1.2%,0) rotate(-.13deg) scaleX(1.025) scaleY(1.065);
     }
-
     76% {
         transform: translate3d(7%,-.6%,0) rotate(.17deg) scaleX(.98) scaleY(.97);
     }
-
     88% {
         transform: translate3d(3%,1%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.045);
     }
-
     100% {
         transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
 }
 
 @keyframes waterDrift {
-    0%, 100% {
-        transform: translate3d(-3%,0,0) scaleY(.98);
-    }
-
-    50% {
-        transform: translate3d(4%,2.5%,0) scaleY(1.08);
-    }
+    0%, 100% { transform: translate3d(-3%,0,0) scaleY(.98); }
+    50% { transform: translate3d(4%,2.5%,0) scaleY(1.08); }
 }
 
 @keyframes surfaceFar {
-    0%, 100% {
-        transform: translate3d(3%,-1%,0) scale(.98);
-    }
-
-    50% {
-        transform: translate3d(-5%,1.5%,0) scale(1.07);
-    }
+    0%, 100% { transform: translate3d(3%,-1%,0) scale(.98); }
+    50% { transform: translate3d(-5%,1.5%,0) scale(1.07); }
 }
 
 @keyframes surfaceMid {
-    0%, 100% {
-        transform: translate3d(-4%,0,0) scaleY(.97);
-    }
-
-    25% {
-        transform: translate3d(0,1.3%,0) scaleY(1.04);
-    }
-
-    50% {
-        transform: translate3d(5%,-1%,0) scaleY(1.09);
-    }
-
-    75% {
-        transform: translate3d(1%,1%,0) scaleY(1.03);
-    }
+    0%, 100% { transform: translate3d(-4%,0,0) scaleY(.97); }
+    25% { transform: translate3d(0,1.3%,0) scaleY(1.04); }
+    50% { transform: translate3d(5%,-1%,0) scaleY(1.09); }
+    75% { transform: translate3d(1%,1%,0) scaleY(1.03); }
 }
 
 @keyframes surfaceNear {
-    0%, 100% {
-        transform: translate3d(4%,0,0) scale(.97);
-    }
-
-    25% {
-        transform: translate3d(0,2%,0) scale(1.035);
-    }
-
-    50% {
-        transform: translate3d(-5%,-1%,0) scale(1.08);
-    }
-
-    75% {
-        transform: translate3d(-1%,1.5%,0) scale(1.03);
-    }
+    0%, 100% { transform: translate3d(4%,0,0) scale(.97); }
+    25% { transform: translate3d(0,2%,0) scale(1.035); }
+    50% { transform: translate3d(-5%,-1%,0) scale(1.08); }
+    75% { transform: translate3d(-1%,1.5%,0) scale(1.03); }
 }
 
 @keyframes gapsDrift {
-    0%, 100% {
-        transform: translate3d(0,0,0) scaleY(.98);
-    }
-
-    25% {
-        transform: translate3d(-2%,.8%,0) scaleY(1.04);
-    }
-
-    50% {
-        transform: translate3d(-4%,-.4%,0) scaleY(.97);
-    }
-
-    75% {
-        transform: translate3d(-1%,.7%,0) scaleY(1.05);
-    }
+    0%, 100% { transform: translate3d(0,0,0) scaleY(.98); }
+    25% { transform: translate3d(-2%,.8%,0) scaleY(1.04); }
+    50% { transform: translate3d(-4%,-.4%,0) scaleY(.97); }
+    75% { transform: translate3d(-1%,.7%,0) scaleY(1.05); }
 }
 
 @keyframes oceanWaveFar {
-    0% {
-        transform: translateX(-50%) translateY(-3px) scaleX(.90);
-    }
-
-    25% {
-        transform: translateX(-48%) translateY(3px) scaleX(1.02);
-    }
-
-    55% {
-        transform: translateX(-53%) translateY(7px) scaleX(1.10);
-    }
-
-    100% {
-        transform: translateX(-47%) translateY(-4px) scaleX(.91);
-    }
+    0% { transform: translateX(-50%) translateY(-3px) scaleX(.90); }
+    25% { transform: translateX(-48%) translateY(3px) scaleX(1.02); }
+    55% { transform: translateX(-53%) translateY(7px) scaleX(1.10); }
+    100% { transform: translateX(-47%) translateY(-4px) scaleX(.91); }
 }
 
 @keyframes oceanWaveMid {
-    0% {
-        transform: translateX(-50%) translateY(5px) scaleX(1.08);
-    }
-
-    30% {
-        transform: translateX(-53%) translateY(-5px) scaleX(.91);
-    }
-
-    65% {
-        transform: translateX(-47%) translateY(8px) scaleX(1.07);
-    }
-
-    100% {
-        transform: translateX(-52%) translateY(-3px) scaleX(.94);
-    }
+    0% { transform: translateX(-50%) translateY(5px) scaleX(1.08); }
+    30% { transform: translateX(-53%) translateY(-5px) scaleX(.91); }
+    65% { transform: translateX(-47%) translateY(8px) scaleX(1.07); }
+    100% { transform: translateX(-52%) translateY(-3px) scaleX(.94); }
 }
 
 @keyframes oceanWaveNear {
-    0% {
-        transform: translateX(-50%) translateY(-5px) scaleX(.91);
-    }
-
-    28% {
-        transform: translateX(-47%) translateY(5px) scaleX(1.05);
-    }
-
-    58% {
-        transform: translateX(-53%) translateY(11px) scaleX(1.10);
-    }
-
-    100% {
-        transform: translateX(-48%) translateY(-7px) scaleX(.93);
-    }
+    0% { transform: translateX(-50%) translateY(-5px) scaleX(.91); }
+    28% { transform: translateX(-47%) translateY(5px) scaleX(1.05); }
+    58% { transform: translateX(-53%) translateY(11px) scaleX(1.10); }
+    100% { transform: translateX(-48%) translateY(-7px) scaleX(.93); }
 }
 
 @keyframes oceanSurfaceFar {
-    0% {
-        transform: translateX(-50%) translateY(4px) scaleX(.92);
-    }
-
-    35% {
-        transform: translateX(-53%) translateY(-5px) scaleX(1.06);
-    }
-
-    70% {
-        transform: translateX(-47%) translateY(7px) scaleX(1.08);
-    }
-
-    100% {
-        transform: translateX(-51%) translateY(-3px) scaleX(.94);
-    }
+    0% { transform: translateX(-50%) translateY(4px) scaleX(.92); }
+    35% { transform: translateX(-53%) translateY(-5px) scaleX(1.06); }
+    70% { transform: translateX(-47%) translateY(7px) scaleX(1.08); }
+    100% { transform: translateX(-51%) translateY(-3px) scaleX(.94); }
 }
 
 @keyframes oceanSurfaceMid {
-    0% {
-        transform: translateX(-50%) translateY(-5px) scaleX(1.07);
-    }
-
-    30% {
-        transform: translateX(-47%) translateY(6px) scaleX(.93);
-    }
-
-    65% {
-        transform: translateX(-53%) translateY(11px) scaleX(1.05);
-    }
-
-    100% {
-        transform: translateX(-48%) translateY(-6px) scaleX(.95);
-    }
+    0% { transform: translateX(-50%) translateY(-5px) scaleX(1.07); }
+    30% { transform: translateX(-47%) translateY(6px) scaleX(.93); }
+    65% { transform: translateX(-53%) translateY(11px) scaleX(1.05); }
+    100% { transform: translateX(-48%) translateY(-6px) scaleX(.95); }
 }
 
 @keyframes oceanSurfaceNear {
-    0% {
-        transform: translateX(-50%) translateY(6px) scaleX(.90);
-    }
-
-    32% {
-        transform: translateX(-53%) translateY(-7px) scaleX(1.06);
-    }
-
-    62% {
-        transform: translateX(-47%) translateY(12px) scaleX(1.10);
-    }
-
-    100% {
-        transform: translateX(-52%) translateY(-5px) scaleX(.92);
-    }
+    0% { transform: translateX(-50%) translateY(6px) scaleX(.90); }
+    32% { transform: translateX(-53%) translateY(-7px) scaleX(1.06); }
+    62% { transform: translateX(-47%) translateY(12px) scaleX(1.10); }
+    100% { transform: translateX(-52%) translateY(-5px) scaleX(.92); }
 }
 
 @keyframes waterAtmosphere {
@@ -1497,17 +1315,14 @@ a {
         opacity: .55;
         transform: translate3d(-20px,2px,0) scaleX(.97);
     }
-
     35% {
         opacity: .88;
         transform: translate3d(5px,-2px,0) scaleX(1.015);
     }
-
     70% {
         opacity: 1;
         transform: translate3d(22px,3px,0) scaleX(1.035);
     }
-
     100% {
         opacity: .62;
         transform: translate3d(-8px,-3px,0) scaleX(.985);
@@ -1519,7 +1334,6 @@ a {
         opacity: .55;
         transform: translate3d(-10px,0,0) scaleX(.98);
     }
-
     100% {
         opacity: .9;
         transform: translate3d(12px,-2px,0) scaleX(1.025);
@@ -1565,12 +1379,11 @@ a {
     }
 
     .project-link-heading {
-        gap: 6px;
+        gap: 5px;
     }
 
-    .project-link-arrow {
-        margin-left: 1px;
-        font-size: 10px;
+    .project-link-external {
+        font-size: 9px;
     }
 
     .project-link-description {
@@ -1583,9 +1396,8 @@ a {
     .theme-toggle {
         top: 14px;
         right: 14px;
-        min-height: 38px;
-        padding: 9px 12px;
-        font-size: 10px;
+        width: 38px;
+        height: 38px;
     }
 }
 
@@ -1605,10 +1417,18 @@ a {
         gap: 9px;
     }
 
+    .project-link-heading {
+        gap: 4px;
+    }
+
     .project-link-name {
         font-size: 10px;
         letter-spacing: .12em;
         text-indent: .12em;
+    }
+
+    .project-link-external {
+        font-size: 8px;
     }
 
     .project-link-description {
@@ -1678,8 +1498,17 @@ a {
         aria-label="Switch to light mode"
         aria-pressed="false"
     >
-        <span class="theme-toggle-icon" aria-hidden="true">○</span>
-        <span class="theme-toggle-label">LIGHT</span>
+        <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.42 1.42"></path>
+            <path d="m17.65 17.65 1.42 1.42"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m4.93 19.07 1.42-1.42"></path>
+            <path d="m17.65 6.35 1.42-1.42"></path>
+        </svg>
     </button>
 
     <!-- Atmosphere -->
@@ -1711,7 +1540,6 @@ a {
 
     <!-- Brand -->
     <footer class="brand">
-
         <h1 class="brand-name">esenus</h1>
 
         <div class="brand-status">
@@ -1730,7 +1558,7 @@ a {
                 <span class="project-link-heading">
                     <span class="status-dot" aria-hidden="true"></span>
                     <span class="project-link-name">loom</span>
-                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                    <span class="project-link-external" aria-hidden="true">↗</span>
                 </span>
 
                 <span class="project-link-description">
@@ -1748,7 +1576,7 @@ a {
                 <span class="project-link-heading">
                     <span class="status-dot is-operational" aria-hidden="true"></span>
                     <span class="project-link-name">nest</span>
-                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                    <span class="project-link-external" aria-hidden="true">↗</span>
                 </span>
 
                 <span class="project-link-description">
@@ -1766,7 +1594,7 @@ a {
                 <span class="project-link-heading">
                     <span class="status-dot is-development" aria-hidden="true"></span>
                     <span class="project-link-name">logs</span>
-                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                    <span class="project-link-external" aria-hidden="true">↗</span>
                 </span>
 
                 <span class="project-link-description">
@@ -1776,7 +1604,6 @@ a {
             </a>
 
         </nav>
-
     </footer>
 </main>
 
@@ -1787,9 +1614,25 @@ a {
 (() => {
     const scene = document.querySelector(".scene");
     const toggle = document.querySelector(".theme-toggle");
-    const icon = toggle.querySelector(".theme-toggle-icon");
-    const label = toggle.querySelector(".theme-toggle-label");
     const themeColor = document.querySelector('meta[name="theme-color"]');
+    const icon = toggle.querySelector(".theme-toggle-icon");
+
+    const sunIcon = `
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2"></path>
+        <path d="M12 20v2"></path>
+        <path d="m4.93 4.93 1.42 1.42"></path>
+        <path d="m17.65 17.65 1.42 1.42"></path>
+        <path d="M2 12h2"></path>
+        <path d="M20 12h2"></path>
+        <path d="m4.93 19.07 1.42-1.42"></path>
+        <path d="m17.65 6.35 1.42-1.42"></path>
+    `;
+
+    const moonIcon = `
+        <path d="M20.9 13.1A8.5 8.5 0 0 1 10.9 3.1
+                 8.6 8.6 0 1 0 20.9 13.1Z"></path>
+    `;
 
     let savedTheme = null;
 
@@ -1806,20 +1649,14 @@ a {
     function updateToggle() {
         const isLight = scene.dataset.theme === "light";
 
-        label.textContent = isLight ? "DARK" : "LIGHT";
-        icon.textContent = isLight ? "◐" : "○";
+        icon.innerHTML = isLight ? moonIcon : sunIcon;
 
         toggle.setAttribute(
             "aria-label",
-            isLight
-                ? "Switch to dark mode"
-                : "Switch to light mode"
+            isLight ? "Switch to dark mode" : "Switch to light mode"
         );
 
-        toggle.setAttribute(
-            "aria-pressed",
-            String(isLight)
-        );
+        toggle.setAttribute("aria-pressed", String(isLight));
 
         themeColor.setAttribute(
             "content",
