@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +78,11 @@ a {
     --link-border-hover: rgba(220,230,235,.32);
     --link-indicator: rgba(220,230,235,.35);
     --link-indicator-hover: rgba(220,230,235,.85);
+    --link-surface: rgba(220,230,235,.025);
+
+    --dot-offline: #727980;
+    --dot-operational: #9bc9ad;
+    --dot-development: #c4aa77;
 
     background: linear-gradient(
         to bottom,
@@ -112,6 +116,11 @@ a {
     --link-border-hover: rgba(35,57,66,.34);
     --link-indicator: rgba(35,57,66,.38);
     --link-indicator-hover: rgba(35,57,66,.80);
+    --link-surface: rgba(35,57,66,.025);
+
+    --dot-offline: #8b9599;
+    --dot-operational: #438663;
+    --dot-development: #a4854c;
 
     background: linear-gradient(
         180deg,
@@ -778,7 +787,6 @@ a {
 
 /* =========================================================
    Project Navigation
-   Three quiet entry points
 ========================================================= */
 .project-nav {
     display: grid;
@@ -809,11 +817,52 @@ a {
 
     transition:
         color .35s ease,
-        background-color .35s ease;
+        background-color .35s ease,
+        opacity .35s ease;
 }
 
 .project-link + .project-link {
     border-left: 1px solid var(--link-border);
+}
+
+/* Project heading and status lamp */
+.project-link-heading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 17px;
+}
+
+/* Status lamp: left of project name */
+.status-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    flex: 0 0 5px;
+    border-radius: 50%;
+    background: var(--dot-offline);
+    opacity: .38;
+    box-shadow: none;
+}
+
+/* Operational: active lamp */
+.status-dot.is-operational {
+    background: var(--dot-operational);
+    opacity: 1;
+    box-shadow: 0 0 5px color-mix(
+        in srgb,
+        var(--dot-operational) 35%,
+        transparent
+    );
+    animation: statusPulse 3.2s ease-in-out infinite;
+}
+
+/* In development: steady amber lamp */
+.status-dot.is-development {
+    background: var(--dot-development);
+    opacity: .85;
+    animation: none;
 }
 
 /* Project name */
@@ -846,6 +895,29 @@ a {
     transition: width .38s cubic-bezier(.2,.7,.2,1);
 }
 
+/* External link arrow */
+.project-link-arrow {
+    display: inline-block;
+    margin-left: 3px;
+    color: var(--link-indicator);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    text-indent: 0;
+    opacity: .65;
+    transform: translate(0, 0);
+    transition:
+        color .35s ease,
+        opacity .35s ease,
+        transform .35s cubic-bezier(.2,.7,.2,1);
+}
+
 /* Short description */
 .project-link-description {
     max-width: 100%;
@@ -859,6 +931,22 @@ a {
     transition: color .35s ease;
 }
 
+/* Not yet available */
+.project-link.is-offline {
+    opacity: .58;
+}
+
+.project-link.is-offline .status-dot {
+    background: var(--dot-offline);
+    opacity: .45;
+    animation: none;
+}
+
+.project-link.is-offline .project-link-arrow {
+    opacity: .35;
+}
+
+/* Hover and keyboard focus */
 .project-link:hover,
 .project-link:focus-visible {
     color: var(--link-hover);
@@ -875,6 +963,13 @@ a {
     color: var(--link-color);
 }
 
+.project-link:hover .project-link-arrow,
+.project-link:focus-visible .project-link-arrow {
+    color: var(--link-hover);
+    opacity: .95;
+    transform: translate(2px, -2px);
+}
+
 .project-link:focus-visible {
     outline: 1px solid var(--link-border-hover);
     outline-offset: 3px;
@@ -883,6 +978,18 @@ a {
 
 .project-link:focus-visible .project-link-name {
     --link-progress: 42%;
+}
+
+/* Status pulse */
+@keyframes statusPulse {
+    0%,
+    100% {
+        opacity: .45;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 /* =========================================================
@@ -960,6 +1067,7 @@ a {
         opacity: .72;
         transform: scale(1);
     }
+
     50% {
         opacity: .92;
         transform: scale(1.025);
@@ -972,16 +1080,19 @@ a {
         filter: blur(0);
         transform: translate3d(-1px,0,0) scale(.99);
     }
+
     35% {
         opacity: .72;
         filter: blur(.15px);
         transform: translate3d(0,-.4px,0) scale(1);
     }
+
     68% {
         opacity: .84;
         filter: blur(.3px);
         transform: translate3d(1px,.3px,0) scale(1.008);
     }
+
     100% {
         opacity: .55;
         filter: blur(0);
@@ -994,6 +1105,7 @@ a {
         opacity: .55;
         transform: translate3d(-12px,0,0) scaleX(.98);
     }
+
     100% {
         opacity: 1;
         transform: translate3d(12px,-2px,0) scaleX(1.025);
@@ -1007,16 +1119,28 @@ a {
     0%, 100% {
         transform: scaleX(1) scaleY(1) translate3d(0,0,0);
     }
+
     100% {
         transform: scaleX(1.015) scaleY(.985) translate3d(0,-1px,0);
     }
 }
 
 @keyframes islandDriftLight {
-    0%, 100% { transform: scaleX(.995) translate3d(0,0,0); }
-    25% { transform: scaleX(1.012) translate3d(0,-.3px,0); }
-    50% { transform: scaleX(.998) translate3d(0,.15px,0); }
-    75% { transform: scaleX(1.008) translate3d(0,-.2px,0); }
+    0%, 100% {
+        transform: scaleX(.995) translate3d(0,0,0);
+    }
+
+    25% {
+        transform: scaleX(1.012) translate3d(0,-.3px,0);
+    }
+
+    50% {
+        transform: scaleX(.998) translate3d(0,.15px,0);
+    }
+
+    75% {
+        transform: scaleX(1.008) translate3d(0,-.2px,0);
+    }
 }
 
 @keyframes gapMistDark {
@@ -1024,6 +1148,7 @@ a {
         opacity: .48;
         transform: translateX(-50%) scaleX(.96);
     }
+
     100% {
         opacity: .78;
         transform: translateX(-50%) scaleX(1.04);
@@ -1035,6 +1160,7 @@ a {
         opacity: .28;
         transform: translateX(-50%) scaleX(.96);
     }
+
     100% {
         opacity: .46;
         transform: translateX(-50%) scaleX(1.04);
@@ -1046,10 +1172,12 @@ a {
         transform: translateX(-50%) scaleX(.92) scaleY(.90);
         opacity: .42;
     }
+
     30% {
         transform: translateX(-50%) scaleX(1.04) scaleY(.98);
         opacity: .58;
     }
+
     65% {
         transform: translateX(-50%) scaleX(1.08) scaleY(1.02);
         opacity: .52;
@@ -1061,10 +1189,12 @@ a {
         transform: translateX(-50%) scaleX(.90);
         opacity: .24;
     }
+
     50% {
         transform: translateX(-50%) scaleX(1);
         opacity: .48;
     }
+
     100% {
         transform: translateX(-50%) scaleX(1.04);
         opacity: .42;
@@ -1076,10 +1206,12 @@ a {
         transform: translateX(-50%) scaleX(.90) scaleY(.90);
         opacity: .32;
     }
+
     35% {
         transform: translateX(-50%) scaleX(1.015) scaleY(.98);
         opacity: .46;
     }
+
     70% {
         transform: translateX(-50%) scaleX(1.045) scaleY(1);
         opacity: .40;
@@ -1091,10 +1223,12 @@ a {
         transform: translateX(-50%) scaleX(.90);
         opacity: .18;
     }
+
     50% {
         transform: translateX(-50%) scaleX(1);
         opacity: .34;
     }
+
     100% {
         transform: translateX(-50%) scaleX(1.035);
         opacity: .28;
@@ -1108,24 +1242,31 @@ a {
     0% {
         transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
+
     15% {
         transform: translate3d(-3%,1%,0) rotate(.08deg) scaleX(1.015) scaleY(1.035);
     }
+
     30% {
         transform: translate3d(2%,-.6%,0) rotate(-.08deg) scaleX(.985) scaleY(.975);
     }
+
     45% {
         transform: translate3d(7%,.8%,0) rotate(.16deg) scaleX(1.025) scaleY(1.05);
     }
+
     60% {
         transform: translate3d(4%,-.8%,0) rotate(-.10deg) scaleX(.99) scaleY(.97);
     }
+
     75% {
         transform: translate3d(-1%,.7%,0) rotate(.10deg) scaleX(1.02) scaleY(1.04);
     }
+
     90% {
         transform: translate3d(-5%,-.4%,0) rotate(-.06deg) scaleX(.99) scaleY(.98);
     }
+
     100% {
         transform: translate3d(-7%,0,0) rotate(-.15deg) scaleX(.98) scaleY(.96);
     }
@@ -1135,103 +1276,220 @@ a {
     0% {
         transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
+
     12% {
         transform: translate3d(4%,1.8%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.055);
     }
+
     25% {
         transform: translate3d(-1%,-.7%,0) rotate(.14deg) scaleX(.975) scaleY(.965);
     }
+
     38% {
         transform: translate3d(-7%,1.5%,0) rotate(-.18deg) scaleX(1.035) scaleY(1.075);
     }
+
     50% {
         transform: translate3d(-4%,-.8%,0) rotate(.08deg) scaleX(.97) scaleY(.955);
     }
+
     63% {
         transform: translate3d(2%,1.2%,0) rotate(-.13deg) scaleX(1.025) scaleY(1.065);
     }
+
     76% {
         transform: translate3d(7%,-.6%,0) rotate(.17deg) scaleX(.98) scaleY(.97);
     }
+
     88% {
         transform: translate3d(3%,1%,0) rotate(-.08deg) scaleX(1.02) scaleY(1.045);
     }
+
     100% {
         transform: translate3d(8%,0,0) rotate(.18deg) scaleX(.96) scaleY(.94);
     }
 }
 
 @keyframes waterDrift {
-    0%, 100% { transform: translate3d(-3%,0,0) scaleY(.98); }
-    50% { transform: translate3d(4%,2.5%,0) scaleY(1.08); }
+    0%, 100% {
+        transform: translate3d(-3%,0,0) scaleY(.98);
+    }
+
+    50% {
+        transform: translate3d(4%,2.5%,0) scaleY(1.08);
+    }
 }
 
 @keyframes surfaceFar {
-    0%, 100% { transform: translate3d(3%,-1%,0) scale(.98); }
-    50% { transform: translate3d(-5%,1.5%,0) scale(1.07); }
+    0%, 100% {
+        transform: translate3d(3%,-1%,0) scale(.98);
+    }
+
+    50% {
+        transform: translate3d(-5%,1.5%,0) scale(1.07);
+    }
 }
 
 @keyframes surfaceMid {
-    0%, 100% { transform: translate3d(-4%,0,0) scaleY(.97); }
-    25% { transform: translate3d(0,1.3%,0) scaleY(1.04); }
-    50% { transform: translate3d(5%,-1%,0) scaleY(1.09); }
-    75% { transform: translate3d(1%,1%,0) scaleY(1.03); }
+    0%, 100% {
+        transform: translate3d(-4%,0,0) scaleY(.97);
+    }
+
+    25% {
+        transform: translate3d(0,1.3%,0) scaleY(1.04);
+    }
+
+    50% {
+        transform: translate3d(5%,-1%,0) scaleY(1.09);
+    }
+
+    75% {
+        transform: translate3d(1%,1%,0) scaleY(1.03);
+    }
 }
 
 @keyframes surfaceNear {
-    0%, 100% { transform: translate3d(4%,0,0) scale(.97); }
-    25% { transform: translate3d(0,2%,0) scale(1.035); }
-    50% { transform: translate3d(-5%,-1%,0) scale(1.08); }
-    75% { transform: translate3d(-1%,1.5%,0) scale(1.03); }
+    0%, 100% {
+        transform: translate3d(4%,0,0) scale(.97);
+    }
+
+    25% {
+        transform: translate3d(0,2%,0) scale(1.035);
+    }
+
+    50% {
+        transform: translate3d(-5%,-1%,0) scale(1.08);
+    }
+
+    75% {
+        transform: translate3d(-1%,1.5%,0) scale(1.03);
+    }
 }
 
 @keyframes gapsDrift {
-    0%, 100% { transform: translate3d(0,0,0) scaleY(.98); }
-    25% { transform: translate3d(-2%,.8%,0) scaleY(1.04); }
-    50% { transform: translate3d(-4%,-.4%,0) scaleY(.97); }
-    75% { transform: translate3d(-1%,.7%,0) scaleY(1.05); }
+    0%, 100% {
+        transform: translate3d(0,0,0) scaleY(.98);
+    }
+
+    25% {
+        transform: translate3d(-2%,.8%,0) scaleY(1.04);
+    }
+
+    50% {
+        transform: translate3d(-4%,-.4%,0) scaleY(.97);
+    }
+
+    75% {
+        transform: translate3d(-1%,.7%,0) scaleY(1.05);
+    }
 }
 
 @keyframes oceanWaveFar {
-    0% { transform: translateX(-50%) translateY(-3px) scaleX(.90); }
-    25% { transform: translateX(-48%) translateY(3px) scaleX(1.02); }
-    55% { transform: translateX(-53%) translateY(7px) scaleX(1.10); }
-    100% { transform: translateX(-47%) translateY(-4px) scaleX(.91); }
+    0% {
+        transform: translateX(-50%) translateY(-3px) scaleX(.90);
+    }
+
+    25% {
+        transform: translateX(-48%) translateY(3px) scaleX(1.02);
+    }
+
+    55% {
+        transform: translateX(-53%) translateY(7px) scaleX(1.10);
+    }
+
+    100% {
+        transform: translateX(-47%) translateY(-4px) scaleX(.91);
+    }
 }
 
 @keyframes oceanWaveMid {
-    0% { transform: translateX(-50%) translateY(5px) scaleX(1.08); }
-    30% { transform: translateX(-53%) translateY(-5px) scaleX(.91); }
-    65% { transform: translateX(-47%) translateY(8px) scaleX(1.07); }
-    100% { transform: translateX(-52%) translateY(-3px) scaleX(.94); }
+    0% {
+        transform: translateX(-50%) translateY(5px) scaleX(1.08);
+    }
+
+    30% {
+        transform: translateX(-53%) translateY(-5px) scaleX(.91);
+    }
+
+    65% {
+        transform: translateX(-47%) translateY(8px) scaleX(1.07);
+    }
+
+    100% {
+        transform: translateX(-52%) translateY(-3px) scaleX(.94);
+    }
 }
 
 @keyframes oceanWaveNear {
-    0% { transform: translateX(-50%) translateY(-5px) scaleX(.91); }
-    28% { transform: translateX(-47%) translateY(5px) scaleX(1.05); }
-    58% { transform: translateX(-53%) translateY(11px) scaleX(1.10); }
-    100% { transform: translateX(-48%) translateY(-7px) scaleX(.93); }
+    0% {
+        transform: translateX(-50%) translateY(-5px) scaleX(.91);
+    }
+
+    28% {
+        transform: translateX(-47%) translateY(5px) scaleX(1.05);
+    }
+
+    58% {
+        transform: translateX(-53%) translateY(11px) scaleX(1.10);
+    }
+
+    100% {
+        transform: translateX(-48%) translateY(-7px) scaleX(.93);
+    }
 }
 
 @keyframes oceanSurfaceFar {
-    0% { transform: translateX(-50%) translateY(4px) scaleX(.92); }
-    35% { transform: translateX(-53%) translateY(-5px) scaleX(1.06); }
-    70% { transform: translateX(-47%) translateY(7px) scaleX(1.08); }
-    100% { transform: translateX(-51%) translateY(-3px) scaleX(.94); }
+    0% {
+        transform: translateX(-50%) translateY(4px) scaleX(.92);
+    }
+
+    35% {
+        transform: translateX(-53%) translateY(-5px) scaleX(1.06);
+    }
+
+    70% {
+        transform: translateX(-47%) translateY(7px) scaleX(1.08);
+    }
+
+    100% {
+        transform: translateX(-51%) translateY(-3px) scaleX(.94);
+    }
 }
 
 @keyframes oceanSurfaceMid {
-    0% { transform: translateX(-50%) translateY(-5px) scaleX(1.07); }
-    30% { transform: translateX(-47%) translateY(6px) scaleX(.93); }
-    65% { transform: translateX(-53%) translateY(11px) scaleX(1.05); }
-    100% { transform: translateX(-48%) translateY(-6px) scaleX(.95); }
+    0% {
+        transform: translateX(-50%) translateY(-5px) scaleX(1.07);
+    }
+
+    30% {
+        transform: translateX(-47%) translateY(6px) scaleX(.93);
+    }
+
+    65% {
+        transform: translateX(-53%) translateY(11px) scaleX(1.05);
+    }
+
+    100% {
+        transform: translateX(-48%) translateY(-6px) scaleX(.95);
+    }
 }
 
 @keyframes oceanSurfaceNear {
-    0% { transform: translateX(-50%) translateY(6px) scaleX(.90); }
-    32% { transform: translateX(-53%) translateY(-7px) scaleX(1.06); }
-    62% { transform: translateX(-47%) translateY(12px) scaleX(1.10); }
-    100% { transform: translateX(-52%) translateY(-5px) scaleX(.92); }
+    0% {
+        transform: translateX(-50%) translateY(6px) scaleX(.90);
+    }
+
+    32% {
+        transform: translateX(-53%) translateY(-7px) scaleX(1.06);
+    }
+
+    62% {
+        transform: translateX(-47%) translateY(12px) scaleX(1.10);
+    }
+
+    100% {
+        transform: translateX(-52%) translateY(-5px) scaleX(.92);
+    }
 }
 
 @keyframes waterAtmosphere {
@@ -1239,14 +1497,17 @@ a {
         opacity: .55;
         transform: translate3d(-20px,2px,0) scaleX(.97);
     }
+
     35% {
         opacity: .88;
         transform: translate3d(5px,-2px,0) scaleX(1.015);
     }
+
     70% {
         opacity: 1;
         transform: translate3d(22px,3px,0) scaleX(1.035);
     }
+
     100% {
         opacity: .62;
         transform: translate3d(-8px,-3px,0) scaleX(.985);
@@ -1258,6 +1519,7 @@ a {
         opacity: .55;
         transform: translate3d(-10px,0,0) scaleX(.98);
     }
+
     100% {
         opacity: .9;
         transform: translate3d(12px,-2px,0) scaleX(1.025);
@@ -1300,6 +1562,15 @@ a {
         font-size: 11px;
         letter-spacing: .14em;
         text-indent: .14em;
+    }
+
+    .project-link-heading {
+        gap: 6px;
+    }
+
+    .project-link-arrow {
+        margin-left: 1px;
+        font-size: 10px;
     }
 
     .project-link-description {
@@ -1450,36 +1721,54 @@ a {
         <!-- Project Navigation -->
         <nav class="project-nav" aria-label="Projects">
 
+            <!-- Not yet available -->
             <a
-                class="project-link"
+                class="project-link is-offline"
                 href="https://loom.esenus.com/"
-                aria-label="loom — Shape ideas. Bring them to life."
+                aria-label="loom — Shape ideas. Bring them to life. Not yet available."
             >
-                <span class="project-link-name">loom</span>
+                <span class="project-link-heading">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span class="project-link-name">loom</span>
+                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                </span>
+
                 <span class="project-link-description">
                     Shape ideas.<br>
                     Bring them to life.
                 </span>
             </a>
 
+            <!-- Operational -->
             <a
                 class="project-link"
                 href="https://nest.esenus.com/"
-                aria-label="nest — Build systems. Shape everyday life."
+                aria-label="nest — Build systems. Shape everyday life. Operational."
             >
-                <span class="project-link-name">nest</span>
+                <span class="project-link-heading">
+                    <span class="status-dot is-operational" aria-hidden="true"></span>
+                    <span class="project-link-name">nest</span>
+                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                </span>
+
                 <span class="project-link-description">
                     Build systems.<br>
                     Shape everyday life.
                 </span>
             </a>
 
+            <!-- In development -->
             <a
                 class="project-link"
-                href="https://www.esenus.com/"
-                aria-label="logs — Document the thinking behind creation."
+                href="https://logs.esenus.com/"
+                aria-label="logs — Document the thinking behind creation. In development."
             >
-                <span class="project-link-name">logs</span>
+                <span class="project-link-heading">
+                    <span class="status-dot is-development" aria-hidden="true"></span>
+                    <span class="project-link-name">logs</span>
+                    <span class="project-link-arrow" aria-hidden="true">↗</span>
+                </span>
+
                 <span class="project-link-description">
                     Document the thinking<br>
                     behind creation.
