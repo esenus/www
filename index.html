@@ -738,7 +738,7 @@ button:focus:not(:focus-visible) {
   width: 42%
 }
 
-.project-link-muse .project-link-name::after {
+.project-link-blog .project-link-name::after {
   display: none
 }
 
@@ -1136,7 +1136,7 @@ button:focus:not(:focus-visible) {
   border-top: 1px solid var(--modal-glass-edge)
 }
 
-.muse-section {
+.blog-section {
   gap: 8px;
   margin-top: 25px
 }
@@ -1203,12 +1203,6 @@ button:focus:not(:focus-visible) {
   font-size: 12px;
   line-height: 1.5;
   font-weight: 500
-}
-
-.resource-role {
-  color: var(--modal-muted);
-  font-size: 10px;
-  font-weight: 300;
 }
 
 .resource-description {
@@ -2159,12 +2153,12 @@ body.has-modal .theme-toggle, body.has-modal .brand {
           <span class="project-link-name">Nest</span>
         </span>
       </button>
-      <button class="project-link project-link-muse" type="button" data-modal="muse" aria-haspopup="dialog" aria-label="Open Muse">
+      <button class="project-link project-link-blog" type="button" data-modal="blog" aria-haspopup="dialog" aria-label="Open Blog">
         <span class="project-link-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.5 11.8 8.2 17.5 10l-5.7 1.8L10 17.5l-1.8-5.7L2.5 10l5.7-1.8z" /><path d="M15.8 2.5v3.2 M14.2 4.1h3.2" /></svg>
         </span>
         <span class="project-link-heading">
           <span class="status-dot is-operational" aria-hidden="true"></span>
-          <span class="project-link-name">Muse</span>
+          <span class="project-link-name">Blog</span>
         </span>
       </button>
 </nav>
@@ -2262,7 +2256,7 @@ body.has-modal .theme-toggle, body.has-modal .brand {
         <a class="resource-link" href="https://nest.esenus.com/" target="_blank" rel="noopener noreferrer">
           <span class="resource-icon-wrap is-unboxed" aria-hidden="true"><svg class="resource-icon" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"></circle><ellipse cx="10" cy="10" rx="3" ry="7"></ellipse><path d="M3.5 7.5h13 M3.5 12.5h13"></path></svg></span>
           <span class="resource-copy">
-            <span class="resource-title">Nest <span class="resource-role">- Livingbase</span><span class="system-status"><span class="status-dot is-development" aria-hidden="true"></span>IN DEVELOPMENT</span></span>
+            <span class="resource-title">Livingbase<span class="system-status"><span class="status-dot is-development" aria-hidden="true"></span>IN DEVELOPMENT</span></span>
             <span class="resource-description">An integrated suite of web services.</span>
           </span>
           <svg class="resource-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4 M13 3 7 9 M11 9v4H3V5h4" /></svg>
@@ -2321,13 +2315,13 @@ body.has-modal .theme-toggle, body.has-modal .brand {
     </section>
   </div>
 
-  <!-- Muse modal -->
-  <div class="modal-layer" id="muse-modal" data-modal-panel="muse" role="presentation" hidden>
+  <!-- Blog modal -->
+  <div class="modal-layer" id="blog-modal" data-modal-panel="blog" role="presentation" hidden>
     <section
       class="modal-window"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="muse-title"
+      aria-labelledby="blog-title"
       tabindex="-1"
     >
       <header class="modal-header">
@@ -2336,19 +2330,19 @@ body.has-modal .theme-toggle, body.has-modal .brand {
 
       <div class="modal-title-row">
         <span class="modal-title-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.5 11.8 8.2 17.5 10l-5.7 1.8L10 17.5l-1.8-5.7L2.5 10l5.7-1.8z" /><path d="M15.8 2.5v3.2 M14.2 4.1h3.2" /></svg></span>
-        <h2 class="modal-title" id="muse-title">Muse</h2>
+        <h2 class="modal-title" id="blog-title">Blog</h2>
         <p class="modal-description"><strong>Ideas in motion.</strong></p>
         <button class="modal-close" type="button" aria-label="Close dialog" data-modal-close>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8 M12 4 4 12"></path></svg>
         </button>
       </div>
 
-      <div class="modal-section muse-section">
+      <div class="modal-section blog-section">
         <p class="modal-section-label">Further Reading</p>
-        <a class="resource-link" href="https://muse.esenus.com/" target="_blank" rel="noopener noreferrer">
+        <a class="resource-link" href="https://blog.esenus.com/" target="_blank" rel="noopener noreferrer">
           <span class="resource-icon-wrap is-unboxed" aria-hidden="true"><svg class="resource-icon" viewBox="0 0 20 20"><path d="M6 2.75h8v14.5l-4-3-4 3z"/></svg></span>
           <span class="resource-copy">
-            <span class="resource-title">Roam <span class="resource-role">- Playground</span></span>
+            <span class="resource-title">Playground</span>
             <span class="resource-description">Browse records, notes and ongoing work.</span>
           </span>
           <svg class="resource-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4 M13 3 7 9 M11 9v4H3V5h4" /></svg>
